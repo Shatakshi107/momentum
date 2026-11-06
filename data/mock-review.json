@@ -1,30 +1,31 @@
 {
-  "readiness": "needs_another_pass",
-  "maintainer_summary": "Adds dark-mode toggle to settings page. Logic is sound; missing persistence and one a11y issue. ~10 min human review once fixed.",
-  "strengths": [
-    "Followed the existing ThemeContext pattern instead of inventing a new one",
-    "Clear PR description that links the issue and includes a screenshot"
-  ],
-  "coaching": [
-    {
-      "file": "src/components/Settings/ThemeToggle.tsx",
-      "line_hint": "L24: const [dark, setDark] = useState(false)",
-      "severity": "should_fix",
-      "what": "The theme resets to light every time the page reloads.",
-      "why": "Issue #388 asks for the choice to be remembered, and the app already stores other preferences in usePreferences().",
-      "question": "Where does the app keep the user's language setting between visits, and could the theme live in the same place?"
-    },
-    {
-      "file": "src/components/Settings/ThemeToggle.tsx",
-      "line_hint": "L31: <div onClick={toggle}>",
-      "severity": "blocker",
-      "what": "The toggle is a clickable div, so keyboard and screen-reader users can't use it.",
-      "why": "The project's CONTRIBUTING.md requires all controls to be keyboard accessible.",
-      "question": "Which HTML element gives you focus and keyboard activation for free?"
-    }
-  ],
-  "understanding_check": [
-    "Why did you read the initial theme from context instead of from the toggle's own state?",
-    "What happens if a user's OS is set to dark mode but they never touch your toggle?"
-  ]
+ "readiness": "needs_another_pass",
+ "maintainer_summary": "Fixes empty-final-batch crash in DataLoader.__iter__ with a guard; good tests. One logic issue: the original code ignored drop_last entirely, and this PR's handling should be double-checked against the docs. ~5 min human review after.",
+ "strengths": [
+  "Put the fix where the bug actually is (__iter__), not in collate_fn",
+  "Three focused tests, including the exact-multiple case that caused the crash",
+  "Updated docs in the same PR"
+ ],
+ "coaching": [
+  {
+   "file": "tinyml/data/loader.py",
+   "line_hint": "L49: if not self.drop_last:",
+   "severity": "should_fix",
+   "what": "Before your change, drop_last was never checked in __iter__, so this changes behavior for drop_last=True users too.",
+   "why": "Changing behavior beyond the issue's scope makes maintainers nervous; call it out so they can review it on purpose.",
+   "question": "What did a user with drop_last=True get before your change, and is the new behavior what the docs promise?"
+  },
+  {
+   "file": "tests/test_loader.py",
+   "line_hint": "test_exact_multiple_no_empty_batch",
+   "severity": "nit",
+   "what": "The test name says what, but not why it matters.",
+   "why": "Future contributors will read this test to understand issue #512.",
+   "question": "Could a one-line comment link this test to the bug it prevents?"
+  }
+ ],
+ "understanding_check": [
+  "Why does the empty batch happen only when the dataset size is an exact multiple of batch_size?",
+  "Why does the fix belong in __iter__ rather than in collate_fn?"
+ ]
 }

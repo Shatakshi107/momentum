@@ -94,6 +94,8 @@ A participant going quiet is a symptom. Find the cause, then fix the cause:
 - Assigned but no commits -> offer a smaller issue or a pairing session.
 - Mentor not replying -> reassign or escalate the mentor.
 - Merged and then silent -> celebrate and suggest a next issue.
+- An open PR with coach_readiness "needs_another_pass" that she hasn't touched for 3+ days since coached_on_day is a stall: she has feedback she hasn't acted on.
+- A PR with coach_readiness "ready_for_human_review" still waiting on a maintainer is the program's fault.
 Investigate with the tools, call propose_action for each person who needs attention, then finish with a 3-sentence summary for the organizer.`,
     messages: [{ role: "user", content: question }],
     tools: [listParticipants, getParticipant, getMentors, proposeAction],
@@ -107,7 +109,7 @@ function mockRun(): { summary: string; actions: Action[]; mock: boolean } {
   return {
     mock: true,
     summary:
-      "5 of 12 participants need attention this week. Two are stalled by us, not by them: Fatima's PR has waited 15 days on a maintainer, and Ritika asked Mentor Meera for help twice with no reply. Fix those two today.",
+      "6 of 12 participants need attention. Two are stalled by us, not by them: Fatima's PR has waited 15 days on a maintainer, and Ritika asked Mentor Meera for help twice with no reply. Fix those two today.",
     actions: [
       {
         participant_id: "p02",
@@ -135,6 +137,32 @@ function mockRun(): { summary: string; actions: Action[]; mock: boolean } {
         message_draft:
           "Hi Kavya, 9 comments is a lot, and most are small. Want to start with just the test? Here's a similar test in the repo you can copy the shape of.",
         urgency: "this_week",
+      },
+      {
+        participant_id: "p04",
+        diagnosis: "stuck_starting",
+        evidence: "Assigned an issue on day 3, no commits in 18 days; messaged mentor Arjun on days 11 and 14.",
+        action: "assign_smaller_issue",
+        message_draft:
+          "Hi Maria, getting started on a new codebase is the hardest part. Want to swap to #77 (a 2-hour contrast fix) and pair with Arjun for 20 minutes to get set up?",
+        urgency: "today",
+      },
+      {
+        participant_id: "p06",
+        diagnosis: "needs_next_issue",
+        evidence: "First PR merged on day 12, no activity in the 9 days since.",
+        action: "suggest_next_issue",
+        message_draft:
+          "Aisha, congrats on your first merge! Ready for round two? #215 builds directly on what you learned and is about the same size.",
+        urgency: "this_week",
+      },
+      {
+        participant_id: "p12",
+        diagnosis: "needs_next_issue",
+        evidence: "Merged on day 6, silent for 15 days. Docs track.",
+        action: "suggest_next_issue",
+        message_draft: "Hi Divya, your docs PR was great. #521 is a docs-and-code tutorial if you want to stretch a bit.",
+        urgency: "watch",
       },
     ],
   };

@@ -12,15 +12,22 @@ What I learned is that writing the code is rarely what stops someone. Setting up
 
 Momentum is that system. For each woman, it matches her to an issue that fits her real week, answers the questions she's afraid to ask in public, coaches her PR instead of rewriting it, shields her from hostile reviews, and turns what she shipped into proof for her resume. For organizers, it finds *why* each person stalled and fixes the cause. Programs stop measuring sign-ups and start measuring women who ship their first PR, and come back for a second.
 
-## What's in the starter
+## What's built
 
-| Piece | File | Status |
+**Ritika's journey** (`app/components/Journey.tsx`): 1 Match → 2 Ask → 3 Review → 4 Shield → 5 Proof
+**Program view** (`app/components/Program.tsx`): Cohort · Mentor inbox · Safety watch · Metrics + backtest
+
+| Feature | Engine | API |
 |---|---|---|
-| PR Review Coach (structured output, Opus 5.5) | `lib/review.ts`, `app/api/review` | Works live on any public PR |
-| Momentum agent (tool-use loop over cohort data) | `lib/momentum.ts`, `app/api/momentum` | Works live; 4 tools |
-| Synthetic cohort, 12 participants with hidden outcomes | `data/cohort.json` | Expand to ~40 on the day |
-| UI with two tabs | `app/page.tsx` | Basic, ready to polish |
-| Mock mode (no key → canned results, zero credits) | `lib/claude.ts`, `data/mock-review.json` | On when no key is set |
+| Issue matchmaker | `lib/match.ts` | `POST /api/ai/match` |
+| Private ask-anything (escalations land in the mentor inbox) | `lib/ask.ts` + `data/repo-context.md` | `POST /api/ai/ask` |
+| PR review coach (`demo` = Ritika's PR, or any public PR URL) | `lib/review.ts` | `POST /api/review` |
+| Tone shield / safety watch (one classifier) | `lib/tone.ts` | `POST /api/ai/tone`, `/api/ai/safety` |
+| Proof profile | `lib/proof.ts` | `POST /api/ai/proof` |
+| Momentum agent (tool use; reads review-coach readiness) | `lib/momentum.ts` | `POST /api/momentum` |
+| Metrics + backtest (no Claude) | `lib/metrics.ts` | client-side |
+
+Every Claude feature has a mock response, so the whole demo runs offline. Set `ANTHROPIC_API_KEY` to go live.
 
 ## Run it
 

@@ -4,7 +4,7 @@
  {"id":"#530","repo":"demo-org/tinyml-kit","title":"Implement mixed-precision training support","labels":["enhancement","ml","help wanted"],"files":["tinyml/train.py","tinyml/optim.py"],"maintainer_estimate_hrs":30},
  {"id":"#521","repo":"demo-org/tinyml-kit","title":"Notebook tutorial: fine-tuning on a custom CSV dataset","labels":["docs","ml","good first issue"],"files":["docs/tutorials/"],"maintainer_estimate_hrs":6},
  {"id":"#77","repo":"demo-org/campus-events","title":"Fix dark-mode contrast on event cards","labels":["frontend","good first issue","a11y"],"files":["src/components/EventCard.tsx"],"maintainer_estimate_hrs":2},
- {"id":"#80","repo":"demo-org/campus-events","title":"Add Hindi translations for the signup flow","labels":["i18n","good first issue"],"files":["locales/hi.json"],"maintainer_estimate_hrs":3},
+ {"id":"#80","repo":"demo-org/campus-events","title":"Add Spanish translations for the signup flow","labels":["i18n","good first issue"],"files":["locales/hi.json"],"maintainer_estimate_hrs":3},
  {"id":"#215","repo":"demo-org/pydata-utils","title":"pandas 3.0 deprecation warnings in read_any()","labels":["bug","python"],"files":["pydata_utils/io.py"],"maintainer_estimate_hrs":5},
  {"id":"#219","repo":"demo-org/pydata-utils","title":"Rewrite CLI with async plugin system","labels":["enhancement","architecture"],"files":["pydata_utils/cli/"],"maintainer_estimate_hrs":40},
  {"id":"#540","repo":"demo-org/tinyml-kit","title":"Add unit tests for confusion_matrix edge cases","labels":["tests","ml","good first issue"],"files":["tests/test_metrics.py"],"maintainer_estimate_hrs":3},

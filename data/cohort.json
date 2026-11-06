@@ -1,30 +1,30 @@
 {
- "program": "Demo Summer of Code 2026 (synthetic)",
+ "program": "Bay Area Women in Open Source cohort, fall 2026 (synthetic)",
  "today": 21,
  "mentors": [
   {
-   "name": "Rahul",
+   "name": "Chris",
    "mentees": 4,
    "days_since_last_reply": 2
   },
   {
-   "name": "Meera",
-   "mentees": 4,
+   "name": "Nicole",
+   "mentees": 5,
    "days_since_last_reply": 9
   },
   {
-   "name": "Arjun",
-   "mentees": 4,
+   "name": "David",
+   "mentees": 3,
    "days_since_last_reply": 4
   }
  ],
  "participants": [
   {
    "id": "p01",
-   "name": "Ananya R.",
-   "location": "Jaipur, IN",
+   "name": "Linh N.",
+   "location": "San Jose, CA",
    "track": "frontend",
-   "mentor": "Rahul",
+   "mentor": "Chris",
    "events": [
     {
      "day": 1,
@@ -76,10 +76,10 @@
   },
   {
    "id": "p02",
-   "name": "Fatima S.",
-   "location": "Lagos, NG",
+   "name": "Jasmine T.",
+   "location": "San Francisco, CA",
    "track": "backend",
-   "mentor": "Meera",
+   "mentor": "Nicole",
    "events": [
     {
      "day": 2,
@@ -111,10 +111,10 @@
   },
   {
    "id": "p03",
-   "name": "Kavya M.",
-   "location": "Nagpur, IN",
+   "name": "Sofia M.",
+   "location": "Hayward, CA",
    "track": "docs",
-   "mentor": "Rahul",
+   "mentor": "Chris",
    "events": [
     {
      "day": 1,
@@ -143,10 +143,10 @@
   },
   {
    "id": "p04",
-   "name": "Maria L.",
-   "location": "Manila, PH",
+   "name": "Ana G.",
+   "location": "East Palo Alto, CA",
    "track": "frontend",
-   "mentor": "Arjun",
+   "mentor": "David",
    "events": [
     {
      "day": 3,
@@ -166,10 +166,10 @@
   },
   {
    "id": "p05",
-   "name": "Sneha P.",
-   "location": "Bhopal, IN",
+   "name": "Priya S.",
+   "location": "Fremont, CA",
    "track": "ml",
-   "mentor": "Meera",
+   "mentor": "Nicole",
    "events": [
     {
      "day": 1,
@@ -229,10 +229,10 @@
   },
   {
    "id": "p06",
-   "name": "Aisha K.",
-   "location": "Nairobi, KE",
+   "name": "Aaliyah J.",
+   "location": "Richmond, CA",
    "track": "backend",
-   "mentor": "Arjun",
+   "mentor": "David",
    "events": [
     {
      "day": 2,
@@ -264,10 +264,10 @@
   },
   {
    "id": "p07",
-   "name": "Priya D.",
-   "location": "Kochi, IN",
+   "name": "Emily C.",
+   "location": "Sunnyvale, CA",
    "track": "frontend",
-   "mentor": "Rahul",
+   "mentor": "Chris",
    "events": [
     {
      "day": 1,
@@ -287,10 +287,10 @@
   },
   {
    "id": "p08",
-   "name": "Lucia G.",
-   "location": "Bogotá, CO",
+   "name": "Destiny P.",
+   "location": "Vallejo, CA",
    "track": "docs",
-   "mentor": "Meera",
+   "mentor": "Nicole",
    "events": [
     {
      "day": 2,
@@ -346,10 +346,10 @@
   },
   {
    "id": "p09",
-   "name": "Ritika J.",
-   "location": "Patna, IN",
+   "name": "Maya R.",
+   "location": "Oakland, CA",
    "track": "ml",
-   "mentor": "Arjun",
+   "mentor": "Nicole",
    "events": [
     {
      "day": 4,
@@ -390,10 +390,10 @@
   },
   {
    "id": "p10",
-   "name": "Grace O.",
-   "location": "Accra, GH",
+   "name": "Keisha W.",
+   "location": "Daly City, CA",
    "track": "backend",
-   "mentor": "Rahul",
+   "mentor": "Chris",
    "events": [
     {
      "day": 1,
@@ -450,10 +450,10 @@
   },
   {
    "id": "p11",
-   "name": "Neha T.",
-   "location": "Indore, IN",
+   "name": "Grace K.",
+   "location": "Santa Clara, CA",
    "track": "frontend",
-   "mentor": "Arjun",
+   "mentor": "David",
    "events": [
     {
      "day": 5,
@@ -466,10 +466,10 @@
   },
   {
    "id": "p12",
-   "name": "Divya S.",
-   "location": "Chennai, IN",
+   "name": "Hannah L.",
+   "location": "Berkeley, CA",
    "track": "docs",
-   "mentor": "Meera",
+   "mentor": "Nicole",
    "events": [
     {
      "day": 1,

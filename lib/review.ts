@@ -3,7 +3,7 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { client, MODEL, FALLBACK, isMock } from "./claude";
 import { fetchPullRequest, prToPrompt, type PullRequest } from "./github";
 import mockReview from "@/data/mock-review.json";
-import demoPr from "@/data/ritika-pr.json";
+import demoPr from "@/data/hero-pr.json";
 
 // What the Review Coach returns. Two audiences in one pass:
 // the contributor gets teaching, the maintainer gets a 30-second triage.
@@ -39,7 +39,7 @@ Rules:
 export async function reviewPullRequest(prUrl: string): Promise<{ review: Review; mock: boolean; title: string }> {
   if (isMock()) return { review: ReviewSchema.parse(mockReview), mock: true, title: demoPr.title };
 
-  // Empty URL or "demo" → Ritika's demo PR, so the journey works without GitHub.
+  // Empty URL or "demo" → Maya's demo PR, so the journey works without GitHub.
   const pr = !prUrl || prUrl === "demo" ? (demoPr as PullRequest) : await fetchPullRequest(prUrl);
   const response = await client.beta.messages.parse({
     model: MODEL,

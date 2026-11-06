@@ -6,7 +6,7 @@ import Program from "./components/Program";
 
 export default function Home() {
   const [mode, setMode] = useState<"journey" | "program">("journey");
-  // Questions Ritika escalates in the journey land in her mentor's inbox.
+  // Questions Maya escalates in the journey land in her mentor's inbox.
   const [escalations, setEscalations] = useState<string[]>([]);
 
   return (
@@ -21,7 +21,7 @@ export default function Home() {
         <div className="flex rounded-lg border border-neutral-200 p-1 text-sm dark:border-neutral-800">
           {(
             [
-              ["journey", "Ritika's journey"],
+              ["journey", "Maya's journey"],
               ["program", "Program view"],
             ] as const
           ).map(([id, text]) => (

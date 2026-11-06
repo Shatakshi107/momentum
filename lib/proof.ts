@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { structured, isMock } from "./claude";
-import ritika from "@/data/ritika.json";
-import ritikaPr from "@/data/ritika-pr.json";
+import hero from "@/data/hero.json";
+import heroPr from "@/data/hero-pr.json";
 
 // Proof profile (#5): turns what she shipped into evidence-backed resume lines,
 // and flags where her own words undersell it.
@@ -12,7 +12,7 @@ export const ProofSchema = z.object({
       text: z.string().describe("Resume bullet: strong verb, what, impact. Max 25 words. Only claims the evidence supports."),
       evidence: z.string().describe("The specific file, test or review exchange that proves it"),
     }),
-  ),
+  ).describe("Exactly 3 bullets, strongest first"),
   underselling: z.array(
     z.object({
       phrase: z.string().describe("Exact words from her draft"),
@@ -34,7 +34,7 @@ export async function buildProof(): Promise<Proof & { mock: boolean }> {
   const out = await structured(
     ProofSchema,
     SYSTEM,
-    `Her profile and draft:\n${JSON.stringify(ritika, null, 1)}\n\nHer merged PR and review history:\n${JSON.stringify(ritikaPr, null, 1)}`,
+    `Her profile and draft:\n${JSON.stringify(hero, null, 1)}\n\nHer merged PR and review history:\n${JSON.stringify(heroPr, null, 1)}`,
     "medium",
   );
   return { ...out, mock: false };
@@ -44,15 +44,15 @@ const MOCK: Proof = {
   bullets: [
     {
       text: "Fixed a crash in tinyml-kit's DataLoader when the final batch is empty, unblocking training on datasets of any size",
-      evidence: "PR #512: early-return guard in tinyml/data/loader.py; issue had 6 user reports",
+      evidence: "PR #547: early-return guard in tinyml/data/loader.py; issue had 6 user reports",
     },
     {
       text: "Wrote 3 edge-case unit tests covering uneven, empty and single-item batches; all pass in CI",
-      evidence: "tests/test_loader.py added in PR #512",
+      evidence: "tests/test_loader.py added in PR #547",
     },
     {
       text: "Updated DataLoader docs to explain drop_last behavior, addressing a recurring user confusion",
-      evidence: "docs/data.md change in PR #512, requested by the maintainer in review",
+      evidence: "docs/data.md change in PR #547, requested by the maintainer in review",
     },
   ],
   underselling: [

@@ -1,0 +1,18 @@
+{
+  "id": "p09",
+  "name": "Maya R.",
+  "location": "Oakland, CA",
+  "year": "Community college CS student (Laney College), transferring next fall",
+  "track": "ml",
+  "skills": [
+    "Python (intermediate)",
+    "NumPy",
+    "pandas",
+    "basic PyTorch from a course",
+    "Git basics"
+  ],
+  "hours_per_week": 6,
+  "constraints": "Works 20 hrs/week at a caf\u00e9; studies on BART; midterms in 3 weeks",
+  "goal": "First real ML contribution I can put on my internship applications",
+  "self_description_draft": "I just helped fix a small bug in a data loader and updated some docs."
+}

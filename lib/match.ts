@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { structured, isMock } from "./claude";
-import ritika from "@/data/ritika.json";
+import hero from "@/data/hero.json";
 import issues from "@/data/issues.json";
 
 // Issue matchmaker (#1): fits issues to her skills AND the hours she really has.
@@ -16,7 +16,7 @@ export const MatchSchema = z.object({
       first_step: z.string().describe("The very first concrete thing to do, under 15 words"),
     }),
   ).describe("Top 3, best first"),
-  avoid: z.array(z.object({ issue_id: z.string(), title: z.string(), reason: z.string() })).describe("Issues that look tempting but don't fit her right now"),
+  avoid: z.array(z.object({ issue_id: z.string(), title: z.string(), reason: z.string() })).describe("The 2-3 most tempting issues that don't fit her right now; skip obvious mismatches"),
 });
 export type Match = z.infer<typeof MatchSchema>;
 
@@ -27,7 +27,7 @@ const SYSTEM = `You match first-time open-source contributors to issues. Your go
 
 export async function matchIssues(): Promise<Match & { mock: boolean }> {
   if (isMock()) return { ...MOCK, mock: true };
-  const out = await structured(MatchSchema, SYSTEM, `Contributor:\n${JSON.stringify(ritika, null, 1)}\n\nOpen issues:\n${JSON.stringify(issues, null, 1)}`, "medium");
+  const out = await structured(MatchSchema, SYSTEM, `Contributor:\n${JSON.stringify(hero, null, 1)}\n\nOpen issues:\n${JSON.stringify(issues, null, 1)}`, "medium");
   return { ...out, mock: false };
 }
 

@@ -67,7 +67,7 @@ function Cohort({ api, run }: { api: ReturnType<typeof useApi<MomentumResult>>; 
       {d && (
         <div className="mt-5 space-y-3">
           <Card className="bg-violet-50 dark:bg-violet-950/40">
-            <p className="text-sm leading-relaxed">{d.summary} <MockBadge on={d.mock} /></p>
+            <p className="whitespace-pre-line text-sm leading-relaxed">{d.summary} <MockBadge on={d.mock} /></p>
           </Card>
           {d.actions.map((a) => <ActionCard key={a.participant_id} a={a} />)}
         </div>
@@ -83,7 +83,7 @@ function MentorInbox({ data, run, loading, escalations }: { data: MomentumResult
       {!data && <Button onClick={run} loading={loading} label="Building inboxes…">Build today&apos;s inboxes</Button>}
       {mentors.map((m) => {
         const items = (data?.actions ?? []).filter((a) => participantsById[a.participant_id]?.mentor === m.name);
-        const asks = m.name === "Meera" ? escalations : [];
+        const asks = m.name === "Nicole" ? escalations : [];
         if (data == null && asks.length === 0) return null;
         return (
           <div key={m.name}>
@@ -95,7 +95,7 @@ function MentorInbox({ data, run, loading, escalations }: { data: MomentumResult
             <div className="space-y-3">
               {asks.map((brief, i) => (
                 <Card key={i} className="border-amber-300 dark:border-amber-800">
-                  <div className="mb-1"><Pill tone="amber">question escalated from Ritika</Pill></div>
+                  <div className="mb-1"><Pill tone="amber">question escalated from Maya</Pill></div>
                   <pre className="whitespace-pre-wrap text-sm">{brief}</pre>
                 </Card>
               ))}

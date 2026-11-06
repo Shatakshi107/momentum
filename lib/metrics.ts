@@ -47,7 +47,8 @@ export function backtest(actions: Action[]) {
   const future = cohort.participants.filter((p) => p._outcome_dropped_on_day != null && p._outcome_dropped_on_day > today);
   const caught = future.filter((p) => flagged.has(p.id));
   const missed = future.filter((p) => !flagged.has(p.id));
-  const falseAlarms = [...flagged].filter((id) => !future.some((p) => p.id === id));
+  const lost = new Set(cohort.participants.filter((p) => "_outcome_note" in p).map((p) => p.id));
+  const falseAlarms = [...flagged].filter((id) => !future.some((p) => p.id === id) && !lost.has(id));
   const daysEarly = caught.map((p) => (p._outcome_dropped_on_day as number) - today);
   return {
     would_drop: future.length,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import ritika from "@/data/ritika.json";
+import hero from "@/data/hero.json";
 import threads from "@/data/threads.json";
 import type { Match } from "@/lib/match";
 import type { Ask } from "@/lib/ask";
@@ -18,11 +18,11 @@ export default function Journey({ onEscalate }: { onEscalate: (brief: string) =>
   return (
     <div>
       <Card className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-        <span className="font-semibold">{ritika.name}</span>
-        <span className="text-neutral-500">{ritika.location}</span>
-        <span className="text-neutral-500">{ritika.year}</span>
-        <span className="text-neutral-500">{ritika.hours_per_week} hrs/week</span>
-        <span className="text-neutral-500">{ritika.constraints}</span>
+        <span className="font-semibold">{hero.name}</span>
+        <span className="text-neutral-500">{hero.location}</span>
+        <span className="text-neutral-500">{hero.year}</span>
+        <span className="text-neutral-500">{hero.hours_per_week} hrs/week</span>
+        <span className="text-neutral-500">{hero.constraints}</span>
       </Card>
       <ol className="mb-6 grid grid-cols-5 gap-2">
         {STEPS.map((s, i) => (
@@ -73,7 +73,7 @@ function MatchStep() {
   return (
     <section>
       <StepIntro title="An issue that fits her real week">
-        Not the most impressive issue: the one she can finish. Her goal: “{ritika.goal}.”
+        Not the most impressive issue: the one she can finish. Her goal: “{hero.goal}.”
       </StepIntro>
       <Button onClick={() => api.run()} loading={api.loading} label="Matching…">Find my first issue</Button>
       <ErrorText error={api.error} />
@@ -149,7 +149,7 @@ function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
               </div>
               <p className="text-sm">{a.answer}</p>
               {a.look_at.length > 0 && <p className="mt-2 text-xs text-neutral-500">Look at: {a.look_at.join(" · ")}</p>}
-              {a.mentor_brief && <pre className="mt-3 whitespace-pre-wrap rounded bg-neutral-50 p-3 text-xs dark:bg-neutral-900">Brief for Meera:{"\n"}{a.mentor_brief}</pre>}
+              {a.mentor_brief && <pre className="mt-3 whitespace-pre-wrap rounded bg-neutral-50 p-3 text-xs dark:bg-neutral-900">Brief for Nicole:{"\n"}{a.mentor_brief}</pre>}
             </Card>
           </div>
         ))}
@@ -168,7 +168,7 @@ function ReviewStep() {
   return (
     <section>
       <StepIntro title="A review that teaches">
-        Strengths first, then guiding questions instead of fixes. The maintainer gets a 3-line summary. Use &quot;demo&quot; for Ritika&apos;s PR, or paste any public GitHub PR.
+        Strengths first, then guiding questions instead of fixes. The maintainer gets a 3-line summary. Use &quot;demo&quot; for Maya&apos;s PR, or paste any public GitHub PR.
       </StepIntro>
       <div className="flex flex-col gap-2 sm:flex-row">
         <input value={prUrl} onChange={(e) => setPrUrl(e.target.value)} className="flex-1 rounded-lg border border-neutral-300 bg-transparent px-3 py-2 text-sm dark:border-neutral-700" />
@@ -178,7 +178,7 @@ function ReviewStep() {
       {r && d && (
         <div className="mt-6 grid gap-6 md:grid-cols-[1fr_260px]">
           <div className="space-y-3">
-            <h3 className="font-medium">For Ritika <MockBadge on={d.mock} /></h3>
+            <h3 className="font-medium">For Maya <MockBadge on={d.mock} /></h3>
             <p className="text-xs text-neutral-500">{d.title}</p>
             <ul className="space-y-1 text-sm text-green-800 dark:text-green-300">
               {r.strengths.map((s) => <li key={s}>✓ {s}</li>)}
@@ -230,7 +230,7 @@ function ShieldStep() {
         ))}
       </div>
       <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} className="w-full rounded-lg border border-neutral-300 bg-transparent px-3 py-2 text-sm dark:border-neutral-700" />
-      <div className="mt-2"><Button onClick={() => api.run({ text, context: "Review comment on Ritika's first PR (#512)" })} loading={api.loading} label="Shielding…">Shield this comment</Button></div>
+      <div className="mt-2"><Button onClick={() => api.run({ text, context: "Review comment on Maya's first PR (#547, fixing issue #512)" })} loading={api.loading} label="Shielding…">Shield this comment</Button></div>
       <ErrorText error={api.error} />
       {d && (
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -245,7 +245,7 @@ function ShieldStep() {
             {d.bias_note && <p className="mt-2 text-xs text-neutral-500">{d.bias_note}</p>}
           </Card>
           <Card className="border-violet-300 dark:border-violet-800">
-            <h3 className="text-sm font-medium text-violet-700 dark:text-violet-300">What Ritika sees</h3>
+            <h3 className="text-sm font-medium text-violet-700 dark:text-violet-300">What Maya sees</h3>
             <p className="mt-2 text-sm">{d.shielded}</p>
             <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm">{d.next_steps.map((s) => <li key={s}>{s}</li>)}</ol>
             <p className="mt-3 text-sm italic text-neutral-500">{d.reassurance}</p>
@@ -271,7 +271,7 @@ function ProofStep() {
       </StepIntro>
       <Card className="mb-3">
         <h3 className="text-xs font-medium uppercase text-neutral-500">Her draft</h3>
-        <p className="mt-1 text-sm italic">&ldquo;{ritika.self_description_draft}&rdquo;</p>
+        <p className="mt-1 text-sm italic">&ldquo;{hero.self_description_draft}&rdquo;</p>
       </Card>
       <Button onClick={() => api.run()} loading={api.loading} label="Building…">Build my proof profile</Button>
       <ErrorText error={api.error} />

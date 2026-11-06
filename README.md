@@ -14,14 +14,14 @@ Momentum is that system. For each woman, it matches her to an issue that fits he
 
 ## What's built
 
-**Ritika's journey** (`app/components/Journey.tsx`): 1 Match → 2 Ask → 3 Review → 4 Shield → 5 Proof
+**Maya's journey** (`app/components/Journey.tsx`): 1 Match → 2 Ask → 3 Review → 4 Shield → 5 Proof
 **Program view** (`app/components/Program.tsx`): Cohort · Mentor inbox · Safety watch · Metrics + backtest
 
 | Feature | Engine | API |
 |---|---|---|
 | Issue matchmaker | `lib/match.ts` | `POST /api/ai/match` |
 | Private ask-anything (escalations land in the mentor inbox) | `lib/ask.ts` + `data/repo-context.md` | `POST /api/ai/ask` |
-| PR review coach (`demo` = Ritika's PR, or any public PR URL) | `lib/review.ts` | `POST /api/review` |
+| PR review coach (`demo` = Maya's PR, or any public PR URL) | `lib/review.ts` | `POST /api/review` |
 | Tone shield / safety watch (one classifier) | `lib/tone.ts` | `POST /api/ai/tone`, `/api/ai/safety` |
 | Proof profile | `lib/proof.ts` | `POST /api/ai/proof` |
 | Momentum agent (tool use; reads review-coach readiness) | `lib/momentum.ts` | `POST /api/momentum` |
@@ -43,7 +43,7 @@ No key? It runs in mock mode, so you can build UI without spending credits. `MOC
 
 See **[FEATURES.md](FEATURES.md)**: 11 features (6 engines), one woman's journey from her first issue to a resume line, the program view, a cut-line build order for 9:00 to 3:00, and the 2:30 demo script.
 
-Demo data ready to use: `data/ritika.json` (hero persona), `data/issues.json` (10 issues, mixed sizes), `data/threads.json` (review comments and chat messages, from kind to hostile), `data/cohort.json` (12 participants with hidden outcomes).
+Demo data ready to use: `data/hero.json` (hero persona), `data/issues.json` (10 issues, mixed sizes), `data/threads.json` (review comments and chat messages, from kind to hostile), `data/cohort.json` (12 participants with hidden outcomes).
 
 ## Notes
 

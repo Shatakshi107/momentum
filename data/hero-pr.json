@@ -1,0 +1,46 @@
+{
+  "url": "https://github.com/demo-org/tinyml-kit/pull/547",
+  "number": 547,
+  "title": "Fix DataLoader crash on empty final batch (fixes #512)",
+  "author": "maya-r",
+  "body": "Fixes #512.\n\nProblem: when the dataset size is an exact multiple of batch_size, __iter__ ends with an empty `batch` list and still calls collate_fn([]), which raises IndexError.\n\nChange: skip the final yield when the leftover batch is empty, and respect drop_last (already an __init__ argument, but __iter__ never checked it). Note: this changes behavior for drop_last=True users, who previously still got the partial batch.\n\nTests: uneven, exact-multiple, drop_last=True, and empty dataset.",
+  "issue_reports": 6,
+  "files": [
+    {
+      "filename": "tinyml/data/loader.py",
+      "status": "modified",
+      "additions": 2,
+      "deletions": 1,
+      "patch": "@@ -12,6 +12,7 @@ class DataLoader:\n     def __init__(self, dataset, batch_size=1, shuffle=False, drop_last=False, collate_fn=default_collate):\n         self.dataset = dataset\n         self.batch_size = batch_size\n         self.drop_last = drop_last\n@@ -41,9 +42,9 @@ class DataLoader:\n     def __iter__(self):\n         batch = []\n         for idx in self.sampler:\n             batch.append(self.dataset[idx])\n             if len(batch) == self.batch_size:\n                 yield self.collate_fn(batch)\n                 batch = []\n-        yield self.collate_fn(batch)\n+        if batch and not self.drop_last:\n+            yield self.collate_fn(batch)"
+    },
+    {
+      "filename": "tests/test_loader.py",
+      "status": "added",
+      "additions": 15,
+      "deletions": 0,
+      "patch": "@@ -0,0 +1,15 @@\n+from tinyml.data import DataLoader\n+\n+def test_uneven_last_batch():\n+    dl = DataLoader(list(range(10)), batch_size=4)\n+    assert [len(b) for b in dl] == [4, 4, 2]\n+\n+def test_exact_multiple_no_empty_batch():  # regression test for #512\n+    dl = DataLoader(list(range(8)), batch_size=4)\n+    assert [len(b) for b in dl] == [4, 4]\n+\n+def test_drop_last_true():\n+    dl = DataLoader(list(range(10)), batch_size=4, drop_last=True)\n+    assert [len(b) for b in dl] == [4, 4]\n+\n+def test_empty_dataset():\n+    assert list(DataLoader([], batch_size=4)) == []"
+    },
+    {
+      "filename": "docs/data.md",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 0,
+      "patch": "@@ -18,3 +18,6 @@ ## DataLoader\n+**drop_last** (bool, default False): if True, the final incomplete batch is dropped.\n+If False, it is returned as a smaller batch. An empty final batch is never yielded."
+    }
+  ],
+  "review_history": [
+    {
+      "by": "maintainer_b",
+      "text": "This is wrong. Did you even read the docs? drop_last exists for a reason."
+    },
+    {
+      "by": "maya-r",
+      "text": "Thanks, I updated the guard to respect drop_last and added docs explaining it."
+    },
+    {
+      "by": "maintainer_a",
+      "text": "LGTM, nice tests. Merging."
+    }
+  ],
+  "merged": true
+}

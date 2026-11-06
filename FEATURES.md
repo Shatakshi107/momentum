@@ -2,7 +2,7 @@
 
 **Who it's for:** women in open-source mentorship programs (GSSoC, Outreachy, Women Who Code-style cohorts), plus the mentors, maintainers and organizers around them.
 
-**Demo story:** follow one woman, **Ritika (Patna, first-year CS, ML track, 6 hrs/week)**, from her first issue to a merged PR and a resume line. Then switch to the organizer's seat and show the system that kept her going.
+**Demo story:** follow one woman, **Maya (Oakland, community college CS, ML track, 6 hrs/week)**, from her first issue to a merged PR and a resume line. Then switch to the organizer's seat and show the system that kept her going.
 
 ## The problem, by user
 
@@ -51,7 +51,7 @@
 
 ## Screens
 
-**Ritika's journey** (a stepper across the top, one step per screen):
+**Maya's journey** (a stepper across the top, one step per screen):
 1. **Match**: her profile (skills, 6 hrs/week) → 3 issues ranked with "why this fits you" and a time estimate. She picks one.
 2. **Ask**: she asks "what does `collate_fn` do and where do I change it?" Claude answers from the repo. A second question gets escalated to her mentor with a brief.
 3. **Review**: her PR gets coached (strengths, guiding questions, understanding check). The maintainer sees a 3-line triage.
@@ -83,9 +83,9 @@ Build the journey in order, so if time runs out you cut from the end, not the mi
 
 ## Demo video (2:30)
 
-1. **0:00** "I ran GirlScript Summer of Code. This is Ritika, and this is where women like her usually drop out." (problem in 20s)
+1. **0:00** "I ran GirlScript Summer of Code. This is Maya, and this is where women like her usually drop out." (problem in 20s)
 2. **0:20** Match → Ask → Review (fast, 40s)
 3. **1:00** **Shield**: the harsh comment and its shielded version. Pause here; this is the moment people remember. (25s)
 4. **1:25** Proof profile: "I just fixed a small bug" → the real bullet. (15s)
-5. **1:40** Organizer view: "Ritika wasn't lazy, her mentor hadn't replied in 9 days," then the mentor inbox, safety flag, and backtest number. (35s)
+5. **1:40** Organizer view: "Maya wasn't lazy, her mentor hadn't replied in 9 days," then the mentor inbox, safety flag, and backtest number. (35s)
 6. **2:15** "Programs measure sign-ups. Momentum measures women who ship." (15s)

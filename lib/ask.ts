@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { readFileSync } from "node:fs";
 import { structured, isMock } from "./claude";
-import ritika from "@/data/ritika.json";
+import hero from "@/data/hero.json";
 
 // Private ask-anything (#2): answers from the repo's own docs, or hands off to
 // her mentor with a brief so she never has to ask in public.
@@ -25,7 +25,7 @@ export async function askAnything(question: string): Promise<Ask & { mock: boole
   const out = await structured(
     AskSchema,
     `${SYSTEM}\n\n<repo_context>\n${repo}\n</repo_context>`,
-    `Contributor: ${ritika.name}, ${ritika.year}, mentor: Meera. Working on issue #512.\nQuestion: ${question}`,
+    `Contributor: ${hero.name}, ${hero.year}, mentor: Nicole. Working on issue #512.\nQuestion: ${question}`,
     "low",
   );
   return { ...out, mock: false };
@@ -41,8 +41,8 @@ const MOCK_ANSWER: Ask = {
 
 const MOCK_ESCALATE: Ask = {
   mode: "escalate",
-  answer: "That's a public API change, which needs a maintainer's OK first. I've sent your question to Meera with context so you don't have to explain it again.",
+  answer: "That's a public API change, which needs a maintainer's OK first. I've sent your question to Nicole with context so you don't have to explain it again.",
   look_at: ["CONTRIBUTING: 'Public API changes need maintainer approval'"],
   mentor_brief:
-    "Ritika (first-year, #512 DataLoader fix) wants to add a `skip_empty` argument to DataLoader.\nThat changes the public API, so per CONTRIBUTING it needs maintainer approval.\nDecision needed: approve the new argument, or point her to the guard-only fix.",
+    "Maya (community college, first PR, fixing issue #512) wants to add a `skip_empty` argument to DataLoader.\nThat changes the public API, so per CONTRIBUTING it needs maintainer approval.\nDecision needed: approve the new argument, or point her to the guard-only fix.",
 };

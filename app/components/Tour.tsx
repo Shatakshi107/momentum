@@ -187,12 +187,21 @@ const SEGMENTS: Seg[] = [
   { id: "10", caption: "Built in a day with Claude. Momentum makes sure they all get to find out what they're capable of.", card: OUTRO },
 ];
 
+// Timing log, read by the headless recorder to lay the narration onto the video.
+type TourWindow = Window & { __tourLog?: { id: string; t: number }[]; __tourDone?: number; __tourPlayStart?: number };
+
 function playAudio(src: string) {
   return new Promise<void>((resolve) => {
     const a = new Audio(src);
     a.onended = () => resolve();
+    const waitOut = () => {
+      // If playback is blocked (e.g. headless recording), still hold for the clip's length.
+      const hold = () => setTimeout(resolve, (isFinite(a.duration) ? a.duration : 12) * 1000);
+      if (a.readyState >= 1) hold();
+      else a.onloadedmetadata = hold;
+    };
     a.onerror = () => resolve();
-    a.play().catch(() => resolve());
+    a.play().catch(waitOut);
   });
 }
 
@@ -264,6 +273,10 @@ export default function Tour() {
       }
     }
     setPhase("playing");
+    const w = window as TourWindow;
+    w.__tourLog = [];
+    w.__tourDone = undefined;
+    w.__tourPlayStart = Date.now();
     window.scrollTo({ top: 0 });
     await sleep(300);
     for (const seg of SEGMENTS) {
@@ -275,6 +288,7 @@ export default function Tour() {
           if (l.caption) setCaption(l.caption);
         }, l.at),
       );
+      w.__tourLog.push({ id: seg.id, t: Date.now() });
       await Promise.all([playAudio(`/narration/${seg.id}.m4a`), seg.act?.() ?? Promise.resolve()]);
       timers.forEach(clearTimeout);
       await sleep(250);
@@ -282,6 +296,7 @@ export default function Tour() {
     await sleep(900);
     setCard(null);
     setCaption("");
+    w.__tourDone = Date.now();
     if (stop) await stop();
     setPhase("done");
   }

@@ -1,5 +1,5 @@
 {
- "program": "Bay Area Women in Open Source cohort, fall 2026 (synthetic)",
+ "program": "Women in Open Source Summer of Code 2026 (US, synthetic)",
  "today": 21,
  "mentors": [
   {
@@ -499,5 +499,16 @@
    "open_prs": [],
    "_outcome_dropped_on_day": 22
   }
- ]
+ ],
+ "pod": "Bay Area pod 14 (mentors Chris, Nicole, David)",
+ "program_scale": {
+  "participants": 8412,
+  "mentors": 1180,
+  "projects": 312,
+  "states": 41,
+  "first_pr_merged": 4879,
+  "second_pr": 2608,
+  "waiting_on_us_7d": 214,
+  "at_risk_this_week": 1093
+ }
 }

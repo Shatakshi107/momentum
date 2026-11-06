@@ -5,14 +5,14 @@ import threads from "@/data/threads.json";
 import cohort from "@/data/cohort.json";
 import type { Action, MomentumEvent, MomentumResult, TrailStep } from "@/lib/momentum";
 import type { Safety } from "@/lib/tone";
-import { cohortMetrics, backtest, participantsById, mentors } from "@/lib/metrics";
+import { backtest, participantsById, mentors } from "@/lib/metrics";
 import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader } from "./ui";
 
 const TABS = ["Cohort", "Mentor inbox", "Safety watch", "Impact"] as const;
 const urgencyTone = { today: "coral", this_week: "amber", watch: "neutral" } as const;
 const urgencyBar = { today: "bg-coral", this_week: "bg-amber", watch: "bg-line" } as const;
 const MOMENTUM_STEPS = [
-  "scanning all 12 participants…",
+  "scanning the 12 participants in pod 14…",
   "checking mentor reply times…",
   "reading timelines and open PRs…",
   "working out why each person went quiet…",
@@ -94,23 +94,33 @@ export default function Program({ escalations, signals }: { escalations: string[
 }
 
 function KpiStrip() {
-  const m = cohortMetrics();
-  const pct = (x: number) => `${Math.round((x / m.participants) * 100)}%`;
+  // National program numbers (synthetic). The co-pilot demo below runs on one 12-person pod.
+  const n = cohort.program_scale;
+  const fmt = (x: number) => x.toLocaleString("en-US");
+  const pct = (x: number) => `${Math.round((x / n.participants) * 100)}%`;
   const tiles = [
-    { v: `${m.participants}`, l: "Participants", s: cohort.program.replace(" (synthetic)", "") },
-    { v: pct(m.first_merge), l: "First PR merged", s: `${m.first_merge} of ${m.participants}` },
-    { v: pct(m.second_pr_opened), l: "Came back for a 2nd PR", s: "the metric that matters" },
-    { v: `${m.prs_waiting_on_maintainer_over_7_days}`, l: "PRs waiting on us 7+ days", s: "our fault, not hers", warn: m.prs_waiting_on_maintainer_over_7_days > 0 },
+    { v: fmt(n.participants), l: "Participants", s: `${n.states} states · ${n.projects} projects · ${fmt(n.mentors)} mentors` },
+    { v: pct(n.first_pr_merged), l: "First PR merged", s: `${fmt(n.first_pr_merged)} women shipped` },
+    { v: pct(n.second_pr), l: "Came back for a 2nd PR", s: `${fmt(n.second_pr)} · the metric that matters` },
+    { v: fmt(n.waiting_on_us_7d), l: "PRs waiting on us 7+ days", s: "our fault, not hers", warn: true },
   ];
   return (
-    <div className="mb-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {tiles.map((t) => (
-        <div key={t.l} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
-          <p className={`font-display text-3xl font-medium tabular-nums ${t.warn ? "text-coral" : ""}`}>{t.v}</p>
-          <p className="mt-1 text-sm font-medium">{t.l}</p>
-          <p className="truncate text-xs text-muted">{t.s}</p>
-        </div>
-      ))}
+    <div className="mb-8">
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <p className="text-sm font-medium">{cohort.program.replace(" (US, synthetic)", "")}</p>
+        <p className="text-xs text-muted">
+          <span className="font-medium text-coral">{fmt(n.at_risk_this_week)} at risk this week</span> · demo below: {cohort.pod}
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {tiles.map((t) => (
+          <div key={t.l} className="rounded-2xl border border-line bg-surface p-4 shadow-card">
+            <p className={`font-display text-3xl font-medium tabular-nums sm:text-4xl ${t.warn ? "text-coral" : ""}`}>{t.v}</p>
+            <p className="mt-1 text-sm font-medium">{t.l}</p>
+            <p className="truncate text-xs text-muted">{t.s}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

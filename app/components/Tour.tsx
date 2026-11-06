@@ -190,6 +190,9 @@ const SEGMENTS: Seg[] = [
 // Timing log, read by the headless recorder to lay the narration onto the video.
 type TourWindow = Window & { __tourLog?: { id: string; t: number }[]; __tourDone?: number; __tourPlayStart?: number };
 
+// Chrome plays the AAC clips; open-source Chromium (the headless recorder) needs WAV.
+const AUDIO_EXT = () => (typeof Audio !== "undefined" && new Audio().canPlayType("audio/mp4") ? "m4a" : "wav");
+
 function playAudio(src: string) {
   return new Promise<void>((resolve) => {
     const a = new Audio(src);
@@ -289,7 +292,7 @@ export default function Tour() {
         }, l.at),
       );
       w.__tourLog.push({ id: seg.id, t: Date.now() });
-      await Promise.all([playAudio(`/narration/${seg.id}.m4a`), seg.act?.() ?? Promise.resolve()]);
+      await Promise.all([playAudio(`/narration/${seg.id}.${AUDIO_EXT()}`), seg.act?.() ?? Promise.resolve()]);
       timers.forEach(clearTimeout);
       await sleep(250);
     }

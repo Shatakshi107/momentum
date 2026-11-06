@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 !.env.example
+
+# WAV copies of narration (only used by the headless recorder)
+/public/narration/*.wav

@@ -27,11 +27,11 @@ Say the lines in quotes. Do the clicks in brackets. Keep the camera on the produ
 
 ## 0:00 to 0:30 · The problem and why me
 
-**[Title card: "Momentum: fuck around, find out, and stay."]**
+**[Title card: "Momentum: mess around, find out, and stay."]**
 
-> "Everyone at this hackathon learned AI the same way. You fucked around and found out: forked a repo, broke it, opened a PR, got it torn apart, tried again. Open source is the biggest FAFO sandbox there is.
+> "Everyone at this hackathon learned AI the same way. You messed around and found out: forked a repo, broke it, opened a PR, got it torn apart, tried again. Open source is the biggest FAFO sandbox there is.
 >
-> But the cost of fucking around isn't equal. In 2024 I was one of four program managers for GirlScript Summer of Code. 27,000 people registered. 17,000 showed up. They opened 11,000 PRs, so at least 6,000 people never opened a single one.
+> But the cost of messing around isn't equal. In 2024 I was one of four program managers for GirlScript Summer of Code. 27,000 people registered. 17,000 showed up. They opened 11,000 PRs, so at least 6,000 people never opened a single one.
 >
 > Writing the code was never what stopped them. Setting up the repo, feeling allowed to ask, and one harsh review were. Four of us couldn't fix that one person at a time. It needed a system."
 
@@ -39,7 +39,7 @@ Say the lines in quotes. Do the clicks in brackets. Keep the camera on the produ
 
 **[App, Maya's journey. Hover the persona card.]**
 
-> "Momentum is an AI co-pilot for open-source mentorship programs. It makes it safe for her to fuck around, and it makes sure the program finds out before she quits. Meet Maya: community college in Oakland, works 20 hours a week, studies on BART."
+> "Momentum is an AI co-pilot for open-source mentorship programs. It makes it safe for her to mess around, and it makes sure the program finds out before she quits. Meet Maya: community college in Oakland, works 20 hours a week, studies on BART."
 
 ## 0:45 to 1:25 · Her side (pre-run each step before recording)
 
@@ -81,7 +81,7 @@ Say the lines in quotes. Do the clicks in brackets. Keep the camera on the produ
 >
 > Constraints: no real participant data, so the cohort is synthetic. A human approves every message. Technical feedback is never hidden. And every call costs cents.
 >
-> The next generation of applied AI engineers is fucking around in open source right now. Momentum makes sure all of them get to find out what they're capable of."
+> The next generation of applied AI engineers is messing around in open source right now. Momentum makes sure all of them get to find out what they're capable of."
 
 ---
 

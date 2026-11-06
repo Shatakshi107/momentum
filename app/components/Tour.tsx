@@ -67,7 +67,7 @@ type Seg = { id: string; caption: string; card?: Card; later?: Later[]; act?: ()
 const INTRO: Card = {
   kicker: "Code with Claude · Women in AI Hackathon 2026",
   title: "Momentum",
-  lines: ["Fuck around. Find out. Stay.", "An AI co-pilot for women in open-source mentorship programs"],
+  lines: ["Mess around. Find out. Stay.", "An AI co-pilot for women in open-source mentorship programs"],
 };
 const NUMBERS: Card = {
   kicker: "GirlScript Summer of Code 2024 · Shatakshi was 1 of 4 program managers",
@@ -90,12 +90,12 @@ const OUTRO: Card = {
 };
 
 const SEGMENTS: Seg[] = [
-  { id: "01", caption: "Everyone here learned AI the same way: you fucked around and found out.", card: INTRO },
+  { id: "01", caption: "Everyone here learned AI the same way: you messed around and found out.", card: INTRO },
   {
     id: "02",
     caption: "Shatakshi saw it at GSSoC 2024: at least 6,000 people never opened a single PR.",
     card: NUMBERS,
-    later: [{ at: 20000, card: SAFETY_NET, caption: "The women who left first had no safety net. It needed a system." }],
+    later: [{ at: 19000, card: SAFETY_NET, caption: "The women who left first had no safety net. It needed a system." }],
   },
   {
     id: "03",
@@ -184,7 +184,7 @@ const SEGMENTS: Seg[] = [
       scrollToEl(findText("Timeline:"), 140);
     },
   },
-  { id: "10", caption: "Built in a day with Claude. Momentum makes sure they all get to find out what they're capable of.", card: OUTRO },
+  { id: "10", caption: "From Oakland to the Mission: every builder gets to find out what she's capable of.", card: OUTRO },
 ];
 
 // Timing log, read by the headless recorder to lay the narration onto the video.
@@ -193,8 +193,10 @@ type TourWindow = Window & { __tourLog?: { id: string; t: number }[]; __tourDone
 // Chrome plays the AAC clips; open-source Chromium (the headless recorder) needs WAV.
 const AUDIO_EXT = () => (typeof Audio !== "undefined" && new Audio().canPlayType("audio/mp4") ? "m4a" : "wav");
 
-function playAudio(src: string) {
-  return new Promise<void>((resolve) => {
+// Always hold for the clip's real length (from script.json), even if the browser can't play it.
+function playAudio(src: string, minSeconds = 0) {
+  const minHold = new Promise<void>((r) => setTimeout(r, minSeconds * 1000));
+  const playback = new Promise<void>((resolve) => {
     const a = new Audio(src);
     a.onended = () => resolve();
     const waitOut = () => {
@@ -206,6 +208,8 @@ function playAudio(src: string) {
     a.onerror = () => resolve();
     a.play().catch(waitOut);
   });
+  const cap = new Promise<void>((r) => setTimeout(r, (minSeconds + 3) * 1000)); // never hang on a stalled clip
+  return Promise.all([minHold, Promise.race([playback, cap])]).then(() => undefined);
 }
 
 async function startRecorder() {
@@ -277,6 +281,9 @@ export default function Tour() {
     }
     setPhase("playing");
     const w = window as TourWindow;
+    const durations: Record<string, number> = Object.fromEntries(
+      ((await fetch("/narration/script.json").then((r) => r.json())) as { id: string; dur: number }[]).map((x) => [x.id, x.dur]),
+    );
     w.__tourLog = [];
     w.__tourDone = undefined;
     w.__tourPlayStart = Date.now();
@@ -292,7 +299,7 @@ export default function Tour() {
         }, l.at),
       );
       w.__tourLog.push({ id: seg.id, t: Date.now() });
-      await Promise.all([playAudio(`/narration/${seg.id}.${AUDIO_EXT()}`), seg.act?.() ?? Promise.resolve()]);
+      await Promise.all([playAudio(`/narration/${seg.id}.${AUDIO_EXT()}`, durations[seg.id] ?? 0), seg.act?.() ?? Promise.resolve()]);
       timers.forEach(clearTimeout);
       await sleep(250);
     }

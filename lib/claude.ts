@@ -23,10 +23,13 @@ export function isMock(): boolean {
 
 
 // One structured-output call. Every feature except the momentum agent goes through here.
+// A user turn can be plain text or content blocks (e.g. an image plus text).
+export type UserContent = Anthropic.Beta.Messages.BetaMessageContentParam;
+
 export async function structured<S extends z.ZodType>(
   schema: S,
   system: string,
-  user: string,
+  user: UserContent,
   effort: "low" | "medium" | "high" = "medium",
 ): Promise<z.infer<S>> {
   const response = await client.beta.messages.parse({

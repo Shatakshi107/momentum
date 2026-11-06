@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import hero from "@/data/hero.json";
 import threads from "@/data/threads.json";
 import type { Match } from "@/lib/match";
-import type { Ask } from "@/lib/ask";
+import type { Ask, AskImage } from "@/lib/ask";
+import type { Checkin } from "@/lib/checkin";
 import type { Review } from "@/lib/review";
 import type { Tone } from "@/lib/tone";
 import type { Proof } from "@/lib/proof";
@@ -13,6 +14,7 @@ import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinki
 const STEPS = [
   { name: "Match", hint: "Find a first issue" },
   { name: "Ask", hint: "Ask without fear" },
+  { name: "Check in", hint: "Talk it out" },
   { name: "Review", hint: "Get coached" },
   { name: "Shield", hint: "Survive a harsh review" },
   { name: "Proof", hint: "Own what she shipped" },
@@ -20,7 +22,7 @@ const STEPS = [
 type Mock = { mock: boolean };
 const MENTOR = "Nicole";
 
-export default function Journey({ onEscalate }: { onEscalate: (brief: string) => void }) {
+export default function Journey({ onEscalate, onCheckin }: { onEscalate: (brief: string) => void; onCheckin: (signal: string) => void }) {
   const [step, setStep] = useState(0);
   return (
     <div>
@@ -29,9 +31,10 @@ export default function Journey({ onEscalate }: { onEscalate: (brief: string) =>
       <div key={step} className="rise">
         {step === 0 && <MatchStep />}
         {step === 1 && <AskStep onEscalate={onEscalate} />}
-        {step === 2 && <ReviewStep />}
-        {step === 3 && <ShieldStep />}
-        {step === 4 && <ProofStep />}
+        {step === 2 && <CheckinStep onCheckin={onCheckin} />}
+        {step === 3 && <ReviewStep />}
+        {step === 4 && <ShieldStep />}
+        {step === 5 && <ProofStep />}
       </div>
       <div className="mt-10 flex items-center justify-between border-t border-line pt-6">
         <Button variant="ghost" onClick={() => setStep(Math.max(0, step - 1))}>
@@ -72,11 +75,11 @@ function Persona() {
 
 function Stepper({ step, setStep }: { step: number; setStep: (n: number) => void }) {
   return (
-    <ol className="relative mb-10 grid grid-cols-5">
-      <div className="absolute left-[10%] right-[10%] top-4 h-0.5 bg-line" aria-hidden />
+    <ol className="relative mb-10 grid grid-cols-6">
+      <div className="absolute left-[8.33%] right-[8.33%] top-4 h-0.5 bg-line" aria-hidden />
       <div
-        className="absolute left-[10%] top-4 h-0.5 bg-brand transition-all duration-500"
-        style={{ width: `${(step / (STEPS.length - 1)) * 80}%` }}
+        className="absolute left-[8.33%] top-4 h-0.5 bg-brand transition-all duration-500"
+        style={{ width: `${(step / (STEPS.length - 1)) * 83.33}%` }}
         aria-hidden
       />
       {STEPS.map((s, i) => (
@@ -90,7 +93,7 @@ function Stepper({ step, setStep }: { step: number; setStep: (n: number) => void
           >
             {i < step ? "✓" : i + 1}
           </button>
-          <span className={`mt-2 text-sm font-medium ${i === step ? "text-ink" : "text-muted"}`}>{s.name}</span>
+          <span className={`mt-2 text-xs font-medium sm:text-sm ${i === step ? "text-ink" : "text-muted"}`}>{s.name}</span>
           <span className="hidden text-xs text-muted sm:block">{s.hint}</span>
         </li>
       ))}
@@ -98,27 +101,76 @@ function Stepper({ step, setStep }: { step: number; setStep: (n: number) => void
   );
 }
 
+const LIVE_REPOS = ["huggingface/diffusers", "keras-team/keras", "jupyterlab/jupyterlab"];
+
 function MatchStep() {
-  const api = useApi<Match & Mock>("/api/ai/match");
+  const api = useApi<Match & Mock & { live?: { repo: string; count: number } }>("/api/ai/match");
+  const [source, setSource] = useState<"demo" | "live">("demo");
+  const [repo, setRepo] = useState(LIVE_REPOS[0]);
   const d = api.data;
   return (
     <section>
       <StepHeader eyebrow="Step 1 · Match" title="An issue that fits her real week">
         Not the most impressive issue: the one she can actually finish between shifts and midterms. A first PR that merges beats an ambitious one that stalls.
       </StepHeader>
-      <Button onClick={() => api.run()} loading={api.loading}>Find Maya&apos;s first issue</Button>
+      <Card className="mb-5 space-y-4">
+        <div className="flex w-fit rounded-full border border-line p-1 text-sm">
+          {(
+            [
+              ["demo", "Demo repo (tinyml-kit)"],
+              ["live", "● Live from GitHub"],
+            ] as const
+          ).map(([id, t]) => (
+            <button key={id} onClick={() => setSource(id)} className={`rounded-full px-3 py-1.5 font-medium transition ${source === id ? "bg-ink text-bg" : "text-muted hover:text-ink"}`}>
+              {t}
+            </button>
+          ))}
+        </div>
+        {source === "live" && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted">github.com/</span>
+              <input value={repo} onChange={(e) => setRepo(e.target.value.trim())} className="flex-1 rounded-full border border-line bg-surface px-4 py-2 font-mono text-sm outline-none focus:border-brand" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {LIVE_REPOS.map((r) => (
+                <button key={r} onClick={() => setRepo(r)} className="rounded-full border border-line px-3 py-1 font-mono text-xs text-muted transition hover:border-brand hover:text-brand">
+                  {r}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-muted">Pulls real, currently open issues labeled &ldquo;good first issue&rdquo;, then ranks them for Maya.</p>
+          </div>
+        )}
+        <Button onClick={() => api.run(source === "live" ? { repo } : {})} loading={api.loading}>Find Maya&apos;s first issue</Button>
+      </Card>
       <ErrorText error={api.error} />
-      {api.loading && <Thinking steps={["reading Maya's skills and schedule…", "sizing 10 open issues for a first-timer…", "ranking what she can finish…"]} />}
+      {api.loading && (
+        <Thinking
+          steps={
+            source === "live"
+              ? [`fetching open good-first-issues from ${repo}…`, "reading each issue and sizing it for a first-timer…", "checking which are already claimed…", "ranking what Maya can finish…"]
+              : ["reading Maya's skills and schedule…", "sizing 10 open issues for a first-timer…", "ranking what she can finish…"]
+          }
+        />
+      )}
       {d && !api.loading && (
         <div className="rise mt-8 space-y-3">
-          <MockBadge on={d.mock} />
+          <div className="flex flex-wrap gap-2">
+            <MockBadge on={d.mock} />
+            {d.live && <Pill tone="mint">● Live · {d.live.count} open good-first-issues in {d.live.repo}</Pill>}
+          </div>
           {d.matches.map((m, i) => (
             <Card key={m.issue_id} className={`flex gap-4 ${i === 0 ? "border-brand ring-1 ring-brand" : ""}`}>
               <FitRing value={m.fit} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   {i === 0 && <Pill tone="brand">Best fit</Pill>}
-                  <span className="font-mono text-xs text-muted">{m.issue_id}</span>
+                  {m.url ? (
+                    <a href={m.url} target="_blank" rel="noreferrer" className="font-mono text-xs text-brand hover:underline">{m.issue_id} ↗</a>
+                  ) : (
+                    <span className="font-mono text-xs text-muted">{m.issue_id}</span>
+                  )}
                 </div>
                 <p className="mt-1 font-medium">{m.title}</p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">{m.why_it_fits}</p>
@@ -153,11 +205,23 @@ const ASK_PRESETS = ["What does collate_fn do, and where should my fix go?", "Ca
 function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
   const api = useApi<Ask & Mock>("/api/ai/ask");
   const [q, setQ] = useState(ASK_PRESETS[0]);
-  const [log, setLog] = useState<{ q: string; a: Ask & Mock }[]>([]);
+  const [log, setLog] = useState<{ q: string; a: Ask & Mock; img?: string }[]>([]);
+  const [image, setImage] = useState<AskImage | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  function attach(file: File | undefined) {
+    if (!file || !/^image\/(png|jpeg|gif|webp)$/.test(file.type)) return;
+    const reader = new FileReader();
+    reader.onload = () => setImage({ data: String(reader.result).split(",")[1], media_type: file.type as AskImage["media_type"] });
+    reader.readAsDataURL(file);
+  }
   async function ask() {
-    const a = await api.run({ question: q });
+    const sent = image;
+    const question = q || (sent ? "What does this error mean and how do I fix it?" : "");
+    if (!question) return;
+    const a = await api.run({ question, image: sent ?? undefined });
     if (!a) return;
-    setLog((l) => [...l, { q, a }]);
+    setLog((l) => [...l, { q: question, a, img: sent ? `data:${sent.media_type};base64,${sent.data}` : undefined }]);
+    setImage(null);
     if (a.mode === "escalate" && a.mentor_brief) onEscalate(a.mentor_brief);
   }
   return (
@@ -171,7 +235,11 @@ function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
           {log.map(({ q, a }, i) => (
             <div key={i} className="rise space-y-3">
               <div className="flex justify-end gap-2">
-                <p className="max-w-[80%] rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-sm text-brand-ink">{q}</p>
+                <div className="flex max-w-[80%] flex-col items-end gap-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {log[i].img && <img src={log[i].img} alt="Screenshot Maya attached" className="max-h-40 rounded-xl border border-line" />}
+                  <p className="rounded-2xl rounded-br-md bg-brand px-4 py-2.5 text-sm text-brand-ink">{q}</p>
+                </div>
                 <Avatar name={hero.name} size={28} />
               </div>
               <div className="flex gap-2">
@@ -203,7 +271,7 @@ function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
           ))}
           {api.loading && (
             <p className="flex items-center gap-2 text-sm text-brand">
-              <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand border-t-transparent" /> Claude is reading the repo docs…
+              <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand border-t-transparent" /> Claude is reading {image ? "the screenshot and " : ""}the repo docs…
             </p>
           )}
         </div>
@@ -214,11 +282,39 @@ function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
                 {p}
               </button>
             ))}
+            <button
+              onClick={() => {
+                setImage({ data: sampleErrorScreenshot(), media_type: "image/png" });
+                setQ("I ran the tests and got this. What did I do wrong?");
+              }}
+              className="rounded-full border border-dashed border-brand px-3 py-1 text-xs text-brand transition hover:bg-brand-soft"
+            >
+              📸 Sample: terminal error screenshot
+            </button>
           </div>
+          {image && (
+            <div className="flex items-center gap-3 rounded-xl bg-surface-2 p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`data:${image.media_type};base64,${image.data}`} alt="Attached screenshot" className="h-12 rounded-md" />
+              <span className="text-xs text-muted">Screenshot attached</span>
+              <button onClick={() => setImage(null)} className="ml-auto px-2 text-xs text-muted hover:text-coral">Remove</button>
+            </div>
+          )}
           <div className="flex gap-2">
+            <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/gif,image/webp" className="hidden" onChange={(e) => attach(e.target.files?.[0])} />
+            <button
+              onClick={() => fileRef.current?.click()}
+              title="Attach a screenshot"
+              aria-label="Attach a screenshot"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand"
+            >
+              📎
+            </button>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onPaste={(e) => attach(e.clipboardData.files?.[0])}
+              placeholder="Ask anything, or paste a screenshot of an error"
               onKeyDown={(e) => e.key === "Enter" && !api.loading && ask()}
               className="flex-1 rounded-full border border-line bg-surface px-4 py-2.5 text-sm outline-none focus:border-brand"
             />
@@ -240,7 +336,7 @@ function ReviewStep() {
   const r = d?.review;
   return (
     <section>
-      <StepHeader eyebrow="Step 3 · Review" title="A review that teaches, not just corrects">
+      <StepHeader eyebrow="Step 4 · Review" title="A review that teaches, not just corrects">
         Strengths first. Guiding questions instead of rewritten code. And a 3-line summary so the maintainer spends 30 seconds, not 30 minutes.
       </StepHeader>
       <div className="flex flex-col gap-2 sm:flex-row">
@@ -310,7 +406,7 @@ function ShieldStep() {
   }
   return (
     <section>
-      <StepHeader eyebrow="Step 4 · Shield" title="The comment that makes women quit">
+      <StepHeader eyebrow="Step 5 · Shield" title="The comment that makes women quit">
         Every real technical point stays. The attack doesn&apos;t reach her alone, and the organizer hears about it the same minute.
       </StepHeader>
       <Card>
@@ -389,7 +485,7 @@ function ProofStep() {
   const d = api.data;
   return (
     <section>
-      <StepHeader eyebrow="Step 5 · Proof" title="Merged. Now say it like it is.">
+      <StepHeader eyebrow="Step 6 · Proof" title="Merged. Now say it like it is.">
         Women tend to undersell their work. Every line here is backed by evidence from her PR. Accurate, not hyped.
       </StepHeader>
       <Card>
@@ -440,6 +536,191 @@ function ProofStep() {
               <p className="mt-4 text-xs text-muted">Draft LinkedIn post</p>
             </Card>
           </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** Draws a realistic terminal screenshot on a canvas, so the vision demo needs no image files. */
+function sampleErrorScreenshot(): string {
+  const lines: [string, string][] = [
+    ["#9aa5ce", "maya@macbook tinyml-kit % pytest -q tests/test_loader.py"],
+    ["#e0e0e0", "ImportError while importing test module '/Users/maya/tinyml-kit/tests/test_loader.py'."],
+    ["#e0e0e0", "Hint: make sure your test modules/packages have valid Python names."],
+    ["#e0e0e0", "Traceback:"],
+    ["#e0e0e0", "tests/test_loader.py:1: in <module>"],
+    ["#e0e0e0", "    from tinyml.data import DataLoader"],
+    ["#ff6b6b", "E   ModuleNotFoundError: No module named 'tinyml'"],
+    ["#ff6b6b", "=================== 1 error in 0.08s ==================="],
+  ];
+  const c = document.createElement("canvas");
+  c.width = 1000;
+  c.height = 80 + lines.length * 30;
+  const g = c.getContext("2d")!;
+  g.fillStyle = "#1a1b26";
+  g.fillRect(0, 0, c.width, c.height);
+  g.fillStyle = "#24253a";
+  g.fillRect(0, 0, c.width, 36);
+  ["#ff5f57", "#febc2e", "#28c840"].forEach((col, i) => {
+    g.fillStyle = col;
+    g.beginPath();
+    g.arc(22 + i * 22, 18, 7, 0, Math.PI * 2);
+    g.fill();
+  });
+  g.fillStyle = "#9aa5ce";
+  g.font = "14px Menlo, monospace";
+  g.fillText("zsh — tinyml-kit", c.width / 2 - 60, 23);
+  g.font = "17px Menlo, monospace";
+  lines.forEach(([col, t], i) => {
+    g.fillStyle = col;
+    g.fillText(t, 20, 70 + i * 30);
+  });
+  return c.toDataURL("image/png").split(",")[1];
+}
+
+const SAMPLE_CHECKIN =
+  "Hey, it's Maya. Um, I've been stuck on the tests for like three days. I reproduced the crash, which felt good, but I'm not sure my fix is even in the right file. Midterms are coming up so I basically only have my BART ride. Honestly I'm kind of wondering if this is for me.";
+
+type SR = {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  onresult: (e: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> }) => void;
+  onend: () => void;
+  onerror: (e: { error: string }) => void;
+};
+
+function speak(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const voice = window.speechSynthesis.getVoices().find((v) => /Samantha|Google US English|Ava|Allison/.test(v.name));
+  if (voice) u.voice = voice;
+  u.rate = 1.02;
+  window.speechSynthesis.speak(u);
+}
+
+function CheckinStep({ onCheckin }: { onCheckin: (signal: string) => void }) {
+  const api = useApi<Checkin & Mock>("/api/ai/checkin");
+  const [text, setText] = useState("");
+  const [listening, setListening] = useState(false);
+  const [micNote, setMicNote] = useState("");
+  const recRef = useRef<SR | null>(null);
+  const d = api.data;
+
+  function toggleMic() {
+    if (listening) {
+      recRef.current?.stop();
+      return;
+    }
+    const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
+    const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+    if (!Ctor) {
+      setMicNote("Voice input needs Chrome. You can type or use the sample instead.");
+      return;
+    }
+    const r = new Ctor();
+    r.continuous = true;
+    r.interimResults = true;
+    r.lang = "en-US";
+    let finalText = "";
+    r.onresult = (e) => {
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalText += t + " ";
+        else interim += t;
+      }
+      setText((finalText + interim).trim());
+    };
+    r.onerror = (e) => setMicNote(e.error === "not-allowed" ? "Microphone permission was blocked." : `Mic error: ${e.error}`);
+    r.onend = () => setListening(false);
+    recRef.current = r;
+    setMicNote("");
+    setText("");
+    r.start();
+    setListening(true);
+  }
+
+  async function send() {
+    recRef.current?.stop();
+    const out = await api.run({ transcript: text });
+    if (!out) return;
+    speak(out.spoken_reply);
+    onCheckin(`${hero.name} (p09) voice check-in: ${out.organizer_signal}`);
+  }
+
+  const stressTone = { low: "mint", medium: "amber", high: "coral" } as const;
+  return (
+    <section>
+      <StepHeader eyebrow="Step 3 · Check in" title="Thirty seconds, out loud, on the train">
+        Typing a status update feels like homework. Talking doesn&apos;t. Maya checks in by voice on BART, hears a real answer back, and the program learns she&apos;s struggling before she goes quiet.
+      </StepHeader>
+      <Card className="flex flex-col items-center gap-5 py-8 text-center">
+        <button
+          onClick={toggleMic}
+          aria-pressed={listening}
+          aria-label={listening ? "Stop recording" : "Start voice check-in"}
+          className={`relative flex h-20 w-20 items-center justify-center rounded-full text-3xl transition ${listening ? "bg-coral text-white" : "bg-brand text-brand-ink hover:brightness-110"}`}
+        >
+          {listening && <span className="absolute inset-0 animate-ping rounded-full bg-coral opacity-30" />}
+          <span className="relative">{listening ? "■" : "🎙"}</span>
+        </button>
+        <p className="text-sm text-muted">{listening ? "Listening… tap to stop" : "Tap to talk, or use the sample check-in"}</p>
+        {micNote && <p className="text-xs text-coral">{micNote}</p>}
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={3}
+          placeholder="Your words appear here as you speak"
+          className="w-full max-w-2xl resize-none rounded-xl border border-line bg-surface-2 px-4 py-3 text-left text-sm leading-relaxed outline-none focus:border-brand"
+        />
+        <div className="flex flex-wrap justify-center gap-2">
+          <Button variant="ghost" onClick={() => setText(SAMPLE_CHECKIN)}>Use sample check-in</Button>
+          <Button onClick={send} loading={api.loading}>Send check-in</Button>
+        </div>
+      </Card>
+      <ErrorText error={api.error} />
+      {api.loading && <Thinking lines={2} steps={["listening for what's blocking her…", "and for how she's feeling…", "picking one step that fits a BART ride…"]} />}
+      {d && !api.loading && (
+        <div className="rise mt-8 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+          <Card className="border-brand ring-1 ring-brand">
+            <div className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-soft text-sm text-brand">🔊</span>
+              <p className="text-xs font-semibold uppercase tracking-wider text-brand">Momentum replied out loud</p>
+              <MockBadge on={d.mock} />
+            </div>
+            <p className="mt-4 font-display text-xl leading-relaxed">&ldquo;{d.spoken_reply}&rdquo;</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <Button size="sm" variant="soft" onClick={() => speak(d.spoken_reply)}>▶ Play again</Button>
+              <span className="text-sm"><span className="font-medium">Next 30 minutes:</span> {d.next_step}</span>
+            </div>
+          </Card>
+          <Card className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium">What the program learned</p>
+              <Pill tone={stressTone[d.stress]}>stress: {d.stress}</Pill>
+            </div>
+            {d.blockers.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Blockers</p>
+                <ul className="mt-1 space-y-1 text-sm">{d.blockers.map((b) => <li key={b}>• {b}</li>)}</ul>
+              </div>
+            )}
+            {d.wins.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">Wins</p>
+                <ul className="mt-1 space-y-1 text-sm text-mint">{d.wins.map((b) => <li key={b}>✓ {b}</li>)}</ul>
+              </div>
+            )}
+            <p className="rounded-xl bg-surface-2 p-3 text-xs text-muted">
+              <span className="font-medium text-ink">Sent to the co-pilot:</span> {d.organizer_signal}
+            </p>
+            {d.needs_human && <p className="rounded-xl bg-coral-soft p-3 text-sm text-coral">A real person ({MENTOR}) will reach out today.</p>}
+          </Card>
         </div>
       )}
     </section>

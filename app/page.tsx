@@ -8,6 +8,8 @@ export default function Home() {
   const [mode, setMode] = useState<"journey" | "program">("journey");
   // Questions Maya escalates in the journey land in her mentor's inbox.
   const [escalations, setEscalations] = useState<string[]>([]);
+  // Voice check-ins become fresh evidence for the momentum agent.
+  const [signals, setSignals] = useState<string[]>([]);
 
   return (
     <div className="min-h-screen">
@@ -51,17 +53,20 @@ export default function Home() {
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-muted">
             {mode === "journey"
-              ? "Momentum keeps women in open-source mentorship programs moving. Follow Maya through the five moments where most first-timers quit."
+              ? "Momentum keeps women in open-source mentorship programs moving. Follow Maya through the six moments where most first-timers quit."
               : "One co-pilot for organizers, mentors and maintainers: it finds why people stall, fixes the cause, and measures who stays."}
           </p>
         </section>
 
         {/* Both stay mounted so results survive switching views during the demo. */}
         <div hidden={mode !== "journey"}>
-          <Journey onEscalate={(b) => setEscalations((e) => (e.includes(b) ? e : [...e, b]))} />
+          <Journey
+            onEscalate={(b) => setEscalations((e) => (e.includes(b) ? e : [...e, b]))}
+            onCheckin={(sig) => setSignals((s) => [...s, sig])}
+          />
         </div>
         <div hidden={mode !== "program"}>
-          <Program escalations={escalations} />
+          <Program escalations={escalations} signals={signals} />
         </div>
       </main>
 

@@ -27,18 +27,29 @@ export type Action = {
 export type TrailStep = { tool: string; detail: string };
 export type MomentumResult = { summary: string; actions: Action[]; trail: TrailStep[]; mock: boolean };
 
-export async function runMomentum(question: string): Promise<MomentumResult> {
-  if (isMock()) return mockRun();
+export type MomentumEvent =
+  | { type: "step"; step: TrailStep }
+  | { type: "action"; action: Action }
+  | { type: "done"; result: MomentumResult }
+  | { type: "error"; error: string };
+
+// emit() streams each tool call and proposed action to the UI as it happens.
+export async function runMomentum(question: string, emit: (e: MomentumEvent) => void = () => {}): Promise<MomentumResult> {
+  if (isMock()) return mockRun(emit);
 
   const actions: Action[] = [];
   const trail: TrailStep[] = []; // what the agent looked at, in order, for the UI's activity trail
+  const log = (step: TrailStep) => {
+    trail.push(step);
+    emit({ type: "step", step });
+  };
 
   const listParticipants = betaZodTool({
     name: "list_participants",
     description: "List every participant with mentor, track and the day of their most recent activity. Call this first.",
     inputSchema: z.object({}),
     run: async () => {
-      trail.push({ tool: "list_participants", detail: `Scanned all ${cohort.participants.length} participants` });
+      log({ tool: "list_participants", detail: `Scanned all ${cohort.participants.length} participants` });
       return JSON.stringify({
         today: cohort.today,
         participants: cohort.participants.map((p) => ({
@@ -58,7 +69,7 @@ export async function runMomentum(question: string): Promise<MomentumResult> {
     description: "Full activity timeline and open PRs (with who the PR is waiting on) for one participant.",
     inputSchema: z.object({ id: z.string() }),
     run: async ({ id }) => {
-      trail.push({ tool: "get_participant", detail: `Read ${cohort.participants.find((x) => x.id === id)?.name ?? id}'s timeline and open PRs` });
+      log({ tool: "get_participant", detail: `Read ${cohort.participants.find((x) => x.id === id)?.name ?? id}'s timeline and open PRs` });
       const p = cohort.participants.find((x) => x.id === id);
       return p ? JSON.stringify(publicView(p)) : `No participant ${id}`;
     },
@@ -69,7 +80,7 @@ export async function runMomentum(question: string): Promise<MomentumResult> {
     description: "Mentor load and responsiveness (days since last reply to any mentee).",
     inputSchema: z.object({}),
     run: async () => {
-      trail.push({ tool: "get_mentors", detail: "Checked mentor load and reply times" });
+      log({ tool: "get_mentors", detail: "Checked mentor load and reply times" });
       return JSON.stringify(cohort.mentors);
     },
   });
@@ -88,7 +99,8 @@ export async function runMomentum(question: string): Promise<MomentumResult> {
     }),
     run: async (input) => {
       actions.push(input);
-      trail.push({ tool: "propose_action", detail: `Proposed: ${input.action.replaceAll("_", " ")} for ${cohort.participants.find((x) => x.id === input.participant_id)?.name ?? input.participant_id}` });
+      emit({ type: "action", action: input });
+      log({ tool: "propose_action", detail: `Proposed: ${input.action.replaceAll("_", " ")} for ${cohort.participants.find((x) => x.id === input.participant_id)?.name ?? input.participant_id}` });
       return "recorded";
     },
   });
@@ -113,11 +125,13 @@ Investigate with the tools, call propose_action for each person who needs attent
   });
 
   const summary = final.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
-  return { summary, actions, trail, mock: false };
+  const result = { summary, actions, trail, mock: false };
+  emit({ type: "done", result });
+  return result;
 }
 
-function mockRun(): MomentumResult {
-  return {
+async function mockRun(emit: (e: MomentumEvent) => void): Promise<MomentumResult> {
+  const result: MomentumResult = {
     mock: true,
     trail: [
       { tool: "list_participants", detail: "Scanned all 12 participants" },
@@ -186,4 +200,16 @@ function mockRun(): MomentumResult {
       },
     ],
   };
+  // Replay the cached run with small delays so the live trail still animates offline.
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  for (const step of result.trail) {
+    await wait(350);
+    emit({ type: "step", step });
+  }
+  for (const action of result.actions) {
+    await wait(250);
+    emit({ type: "action", action });
+  }
+  emit({ type: "done", result });
+  return result;
 }

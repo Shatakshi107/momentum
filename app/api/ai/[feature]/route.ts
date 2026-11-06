@@ -3,13 +3,16 @@ import { matchIssues } from "@/lib/match";
 import { askAnything } from "@/lib/ask";
 import { shieldComment, safetyScan } from "@/lib/tone";
 import { buildProof } from "@/lib/proof";
+import { checkIn } from "@/lib/checkin";
 
 export const maxDuration = 300;
 
-// One route for the single-call features: /api/ai/match, /ask, /tone, /safety, /proof
-const handlers: Record<string, (body: Record<string, string>) => Promise<unknown>> = {
-  match: () => matchIssues(),
-  ask: (b) => askAnything(b.question ?? ""),
+// One route for the single-call features: /api/ai/match, /ask, /checkin, /tone, /safety, /proof
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handlers: Record<string, (body: any) => Promise<unknown>> = {
+  match: (b) => matchIssues(b.repo ? String(b.repo) : undefined),
+  ask: (b) => askAnything(b.question ?? "", b.image),
+  checkin: (b) => checkIn(String(b.transcript ?? "")),
   tone: (b) => shieldComment({ text: b.text ?? "", context: b.context }),
   safety: () => safetyScan(),
   proof: () => buildProof(),

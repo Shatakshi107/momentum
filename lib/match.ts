@@ -2,6 +2,7 @@ import { z } from "zod";
 import { structured, isMock } from "./claude";
 import hero from "@/data/hero.json";
 import issues from "@/data/issues.json";
+import { fetchGoodFirstIssues } from "./github";
 
 // Issue matchmaker (#1): fits issues to her skills AND the hours she really has.
 
@@ -10,6 +11,7 @@ export const MatchSchema = z.object({
     z.object({
       issue_id: z.string(),
       title: z.string(),
+      url: z.string().describe("The issue URL if provided, else empty"),
       fit: z.number().describe("0-100"),
       why_it_fits: z.string().describe("One sentence tied to HER skills, goal and constraints"),
       weeks_at_her_pace: z.number().describe("Realistic weeks given her hours per week, including learning time"),
@@ -25,10 +27,22 @@ const SYSTEM = `You match first-time open-source contributors to issues. Your go
 - Prefer issues aligned with her stated goal.
 - Be honest in "avoid" about issues that are too big, need approval first, or don't match her skills.`;
 
-export async function matchIssues(): Promise<Match & { mock: boolean }> {
+export async function matchIssues(repo?: string): Promise<Match & { mock: boolean; live?: { repo: string; count: number } }> {
+  // Live mode pulls real open issues from GitHub; demo mode uses the curated tinyml-kit set.
+  const live = repo ? await fetchGoodFirstIssues(repo) : null;
+  if (live && live.length === 0) throw new Error(`${repo} has no open "good first issue" right now. They get claimed fast! Try another repo.`);
   if (isMock()) return { ...MOCK, mock: true };
-  const out = await structured(MatchSchema, SYSTEM, `Contributor:\n${JSON.stringify(hero, null, 1)}\n\nOpen issues:\n${JSON.stringify(issues, null, 1)}`, "medium");
-  return { ...out, mock: false };
+  const pool = live ?? issues;
+  const note = live
+    ? "These are REAL open GitHub issues with no hour estimates. Estimate size from the title, body and labels. Comments > 5 or assigned=true usually means someone is already on it; say so."
+    : "";
+  const out = await structured(
+    MatchSchema,
+    SYSTEM,
+    `Contributor:\n${JSON.stringify(hero, null, 1)}\n\n${note}\nOpen issues:\n${JSON.stringify(pool, null, 1)}`,
+    "medium",
+  );
+  return { ...out, mock: false, live: live ? { repo: repo!, count: live.length } : undefined };
 }
 
 const MOCK: Match = {
@@ -36,6 +50,7 @@ const MOCK: Match = {
     {
       issue_id: "#512",
       title: "DataLoader crashes on empty batch when drop_last=False",
+      url: "",
       fit: 92,
       why_it_fits: "A real ML bug in code you've used in your PyTorch course, small enough to finish before exams, and a strong line for internship applications.",
       weeks_at_her_pace: 2,
@@ -44,6 +59,7 @@ const MOCK: Match = {
     {
       issue_id: "#540",
       title: "Add unit tests for confusion_matrix edge cases",
+      url: "",
       fit: 84,
       why_it_fits: "Uses your NumPy skills, tests are the fastest way to learn a codebase, and it's very likely to merge.",
       weeks_at_her_pace: 1.5,
@@ -52,6 +68,7 @@ const MOCK: Match = {
     {
       issue_id: "#521",
       title: "Notebook tutorial: fine-tuning on a custom CSV dataset",
+      url: "",
       fit: 71,
       why_it_fits: "Plays to your pandas strength and is visible work, but it's more writing than code.",
       weeks_at_her_pace: 3,

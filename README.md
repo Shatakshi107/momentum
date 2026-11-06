@@ -14,17 +14,18 @@ Momentum is that system. For each woman, it matches her to an issue that fits he
 
 ## What's built
 
-**Maya's journey** (`app/components/Journey.tsx`): 1 Match → 2 Ask → 3 Review → 4 Shield → 5 Proof
+**Maya's journey** (`app/components/Journey.tsx`): 1 Match → 2 Ask → 3 Check in → 4 Review → 5 Shield → 6 Proof
 **Program view** (`app/components/Program.tsx`): Cohort · Mentor inbox · Safety watch · Metrics + backtest
 
 | Feature | Engine | API |
 |---|---|---|
-| Issue matchmaker | `lib/match.ts` | `POST /api/ai/match` |
-| Private ask-anything (escalations land in the mentor inbox) | `lib/ask.ts` + `data/repo-context.md` | `POST /api/ai/ask` |
+| Issue matchmaker (demo set, or **live good-first-issues from any GitHub repo**) | `lib/match.ts`, `lib/github.ts` | `POST /api/ai/match` `{repo?}` |
+| Private ask-anything, with **screenshot help (vision)**; escalations land in the mentor inbox | `lib/ask.ts` + `data/repo-context.md` | `POST /api/ai/ask` `{question, image?}` |
+| **Voice check-in** (browser speech-to-text and text-to-speech; Claude replies and extracts signals for the agent) | `lib/checkin.ts` | `POST /api/ai/checkin` |
 | PR review coach (`demo` = Maya's PR, or any public PR URL) | `lib/review.ts` | `POST /api/review` |
 | Tone shield / safety watch (one classifier) | `lib/tone.ts` | `POST /api/ai/tone`, `/api/ai/safety` |
 | Proof profile | `lib/proof.ts` | `POST /api/ai/proof` |
-| Momentum agent (tool use; reads review-coach readiness) | `lib/momentum.ts` | `POST /api/momentum` |
+| Momentum agent (tool use; reads review-coach readiness and voice check-ins; **streams its trail live** as NDJSON) | `lib/momentum.ts` | `POST /api/momentum` `{signals?}` |
 | Metrics + backtest (no Claude) | `lib/metrics.ts` | client-side |
 
 Every Claude feature has a mock response, so the whole demo runs offline. Set `ANTHROPIC_API_KEY` to go live.
@@ -50,3 +51,5 @@ Demo data ready to use: `data/hero.json` (hero persona), `data/issues.json` (10 
 - Model: `claude-opus-5-5` with server-side refusal fallback (`fallbacks: "default"`). Override with `CLAUDE_MODEL`.
 - Each participant gets $100 in credits. A PR review costs a few cents, so you can run dozens.
 - The cohort data is synthetic. Don't put real participants' data in the repo.
+
+> Voice input uses the browser's Web Speech API: demo it in **Chrome**. Typing or the sample check-in works everywhere.

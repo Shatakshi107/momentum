@@ -3,7 +3,7 @@
 import { useState } from "react";
 import threads from "@/data/threads.json";
 import cohort from "@/data/cohort.json";
-import type { Action, MomentumResult } from "@/lib/momentum";
+import type { Action, MomentumEvent, MomentumResult, TrailStep } from "@/lib/momentum";
 import type { Safety } from "@/lib/tone";
 import { cohortMetrics, backtest, participantsById, mentors } from "@/lib/metrics";
 import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader } from "./ui";
@@ -19,10 +19,52 @@ const MOMENTUM_STEPS = [
   "drafting the right next step for each…",
 ];
 
-export default function Program({ escalations }: { escalations: string[] }) {
+/** Reads the agent's NDJSON stream so steps and cards appear while it works. */
+function useMomentum() {
+  const [data, setData] = useState<MomentumResult | null>(null);
+  const [live, setLive] = useState<{ trail: TrailStep[]; actions: Action[] }>({ trail: [], actions: [] });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  async function run(signals: string[]) {
+    setLoading(true);
+    setError("");
+    setData(null);
+    setLive({ trail: [], actions: [] });
+    try {
+      const res = await fetch("/api/momentum", { method: "POST", body: JSON.stringify({ signals }) });
+      if (!res.ok || !res.body) throw new Error(`Request failed (${res.status})`);
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buf = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += dec.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const e = JSON.parse(line) as MomentumEvent;
+          if (e.type === "step") setLive((l) => ({ ...l, trail: [...l.trail, e.step] }));
+          else if (e.type === "action") setLive((l) => ({ ...l, actions: [...l.actions, e.action] }));
+          else if (e.type === "done") setData(e.result);
+          else if (e.type === "error") setError(e.error);
+        }
+      }
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+  return { data, live, loading, error, run };
+}
+type MomentumApi = ReturnType<typeof useMomentum>;
+
+export default function Program({ escalations, signals }: { escalations: string[]; signals: string[] }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Cohort");
-  const momentum = useApi<MomentumResult>("/api/momentum");
-  const runMomentum = () => momentum.run({ question: "Who is at risk of dropping off this week, and what should I do?" });
+  const momentum = useMomentum();
+  const runMomentum = () => momentum.run(signals);
 
   return (
     <div>
@@ -42,7 +84,7 @@ export default function Program({ escalations }: { escalations: string[] }) {
         ))}
       </nav>
       <div key={tab} className="rise">
-        {tab === "Cohort" && <Cohort api={momentum} run={runMomentum} />}
+        {tab === "Cohort" && <Cohort m={momentum} run={runMomentum} signals={signals} />}
         {tab === "Mentor inbox" && <MentorInbox data={momentum.data} run={runMomentum} loading={momentum.loading} escalations={escalations} />}
         {tab === "Safety watch" && <SafetyWatch />}
         {tab === "Impact" && <Impact actions={momentum.data?.actions} run={runMomentum} loading={momentum.loading} />}
@@ -112,23 +154,25 @@ function ActionCard({ a, compact = false }: { a: Action; compact?: boolean }) {
   );
 }
 
-function Trail({ steps }: { steps: MomentumResult["trail"] }) {
-  const [open, setOpen] = useState(false);
+function Trail({ steps, live = false }: { steps: TrailStep[]; live?: boolean }) {
+  const [userOpen, setOpen] = useState(false);
+  const open = live || userOpen;
   if (!steps?.length) return null;
   const reads = steps.filter((s) => s.tool === "get_participant").length;
   return (
     <div className="rounded-2xl border border-line bg-surface">
       <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between px-5 py-3 text-left text-sm">
         <span>
-          <span className="font-medium">How the co-pilot got here</span>
+          <span className="font-medium">{live ? "Co-pilot at work" : "How the co-pilot got here"}</span>
           <span className="text-muted"> · {steps.length} steps, {reads} timelines read</span>
+          {live && <span className="ml-2 inline-block h-2 w-2 animate-pulse rounded-full bg-brand" />}
         </span>
         <span className="text-muted">{open ? "▴" : "▾"}</span>
       </button>
       {open && (
         <ol className="space-y-2 border-t border-line px-5 py-4">
           {steps.map((s, i) => (
-            <li key={i} className="flex gap-3 text-sm">
+            <li key={i} className="rise flex gap-3 text-sm">
               <span className="w-5 shrink-0 text-right text-xs tabular-nums text-muted">{i + 1}</span>
               <code className="shrink-0 rounded bg-surface-2 px-1.5 text-xs text-brand">{s.tool}</code>
               <span className="text-muted">{s.detail}</span>
@@ -140,28 +184,38 @@ function Trail({ steps }: { steps: MomentumResult["trail"] }) {
   );
 }
 
-function Cohort({ api, run }: { api: ReturnType<typeof useApi<MomentumResult>>; run: () => void }) {
-  const d = api.data;
+function Cohort({ m, run, signals }: { m: MomentumApi; run: () => void; signals: string[] }) {
+  const d = m.data;
+  const actions = d?.actions ?? m.live.actions;
   return (
     <section>
       <StepHeader eyebrow="Co-pilot" title="Quiet is a symptom. Find the cause.">
         The co-pilot investigates every participant, works out why each one stalled, and drafts the fix. Sometimes the cause is us: a slow review or a mentor who stopped replying.
       </StepHeader>
-      <Button onClick={run} loading={api.loading}>Who needs us this week?</Button>
-      <ErrorText error={api.error} />
-      {api.loading && <Thinking lines={3} steps={MOMENTUM_STEPS} />}
-      {d && !api.loading && (
+      <div className="flex flex-wrap items-center gap-3">
+        <Button onClick={run} loading={m.loading}>{m.loading ? "Investigating…" : "Who needs us this week?"}</Button>
+        {signals.length > 0 && <Pill tone="brand">🎙 {signals.length} new voice check-in{signals.length > 1 ? "s" : ""} included</Pill>}
+      </div>
+      <ErrorText error={m.error} />
+      {(m.loading || d) && (
         <div className="rise mt-8 space-y-4">
-          <div className="rounded-2xl bg-ink p-6 text-bg shadow-card">
-            <div className="mb-2 flex items-center gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wider opacity-70">This week&apos;s briefing</p>
-              <MockBadge on={d.mock} />
+          {d && (
+            <div className="rise rounded-2xl bg-ink p-6 text-bg shadow-card">
+              <div className="mb-2 flex items-center gap-2">
+                <p className="text-xs font-semibold uppercase tracking-wider opacity-70">This week&apos;s briefing</p>
+                <MockBadge on={d.mock} />
+              </div>
+              <p className="whitespace-pre-line font-display text-lg leading-relaxed">{d.summary.replaceAll("**", "")}</p>
             </div>
-            <p className="whitespace-pre-line font-display text-lg leading-relaxed">{d.summary.replaceAll("**", "")}</p>
-          </div>
-          <Trail steps={d.trail} />
+          )}
+          {m.loading && m.live.trail.length === 0 && <Thinking lines={1} steps={MOMENTUM_STEPS} />}
+          <Trail steps={d?.trail ?? m.live.trail} live={m.loading} />
           <div className="grid gap-4 lg:grid-cols-2">
-            {d.actions.map((a) => <ActionCard key={a.participant_id} a={a} compact />)}
+            {actions.map((a) => (
+              <div key={a.participant_id} className="rise">
+                <ActionCard a={a} compact />
+              </div>
+            ))}
           </div>
         </div>
       )}

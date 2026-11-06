@@ -6,7 +6,11 @@ Built for *Code with Claude: Women in AI Hackathon* (Anthropic SF, Nov 6, 2026).
 
 ## Pitch
 
-Open-source programs are how thousands of women outside big tech hubs get their first real engineering experience, and most of them never finish. I ran GirlScript Summer of Code and saw why up close. Participants don't quit because they're lazy. They stall because their PR has waited two weeks for a maintainer, a nine-comment review felt like a wall, or their mentor stopped replying. Meanwhile maintainers are drowning in AI-generated PRs, so 2026 projects are closing the door on newcomers. Momentum is an agent that sits between participants, mentors and maintainers. It reviews every PR the way a patient senior engineer would, teaching instead of rewriting, and hands the maintainer a 30-second triage. It watches the whole cohort, finds *why* each person stalled, and fixes the cause, whether that's a slow review, a missing mentor or an issue that's too big. Programs stop measuring sign-ups and start measuring women who ship.
+In 2024 I was one of four program managers for GirlScript Summer of Code. **27,000 people registered. 17,000 became participants. They opened 11,000 PRs across 205 projects.** There were fewer PRs than participants, so even in the best case at least 6,000 people never opened a single one. And four of us were managing 17,000 people.
+
+What I learned is that writing the code is rarely what stops someone. Setting up the repo, reading the contribution guidelines and *feeling allowed to ask* stops them. So do a review that sits for two weeks, or a comment that reads like "did you even read the docs?" That doesn't scale with heroics; it needs a system.
+
+Momentum is that system. For each woman, it matches her to an issue that fits her real week, answers the questions she's afraid to ask in public, coaches her PR instead of rewriting it, shields her from hostile reviews, and turns what she shipped into proof for her resume. For organizers, it finds *why* each person stalled and fixes the cause. Programs stop measuring sign-ups and start measuring women who ship their first PR, and come back for a second.
 
 ## What's in the starter
 

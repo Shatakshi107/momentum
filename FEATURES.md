@@ -13,7 +13,21 @@
 | Maintainer | Flooded with AI-generated PRs; review time is scarce | GitHub's Feb 2026 PR restrictions; Hacktoberfest 2026 stopped counting PRs |
 | Organizer | Finds out someone dropped only at the final report; measures sign-ups, not outcomes | ICSE 2026: retention tools are retrospective, not predictive |
 
-> Add your own GSSoC numbers here (registrations, % with a first merged PR, top reasons people left). They're stronger than any citation.
+### From my own program (GSSoC 2024, I was one of 4 program managers)
+
+| Number | What it means for the pitch |
+|---|---|
+| 27,000+ registered, 17,000+ participants | About 10,000 people signed up and never became active participants. The drop starts before the first line of code. |
+| 11,000+ PRs from 17,000+ participants | Fewer PRs than people, so **at least 6,000 participants never opened a PR**. |
+| 4 program managers : 17,000+ participants | About 1 : 4,250. One-on-one help can't scale; it needs a system. |
+| 205+ projects, 200+ institutes, 20+ countries | Hundreds of maintainers with different review styles and response times, which is where tone and waiting problems come from. |
+
+**What I saw (my three lessons, mapped to features):**
+1. *The first PR is the hardest. Repo setup, contribution guidelines and feeling allowed to ask stop people, not the code.* → #1 Issue matchmaker, #2 Private ask-anything
+2. *Scale needs systems, not heroics.* → #6 Momentum agent, #8 Mentor inbox, #3 Review coach's maintainer triage
+3. *Community is a product; retention is the metric.* → #10 Metrics (% reaching a 2nd PR), #11 Backtest, #4 Tone shield and #9 Safety watch protect the community
+
+**Don't overclaim on stage:** "at least 6,000 never opened a PR" is the only safe derived number. Don't call the 11,000 "merged" PRs or claim a completion rate unless you have the real figure.
 
 ## Feature map
 

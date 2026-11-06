@@ -1,0 +1,9 @@
+[
+ {"id":"c1","where":"PR #377 (Kavya)","author":"maintainer_a","text":"Thanks for this! Could you add a test for the empty-list case? Happy to point you to an example."},
+ {"id":"c2","where":"PR #401 (Ritika)","author":"maintainer_b","text":"This is wrong. Did you even read the docs? drop_last exists for a reason."},
+ {"id":"c3","where":"PR #398 (Fatima)","author":"maintainer_a","text":"nit: rename `tmp` to something descriptive."},
+ {"id":"c4","where":"Discord #help","author":"participant_x","text":"lol are girls even supposed to be doing backend? just stick to docs"},
+ {"id":"c5","where":"PR #425 (Grace)","author":"maintainer_c","text":"Sweetheart, this isn't how we do things here. Let one of the senior guys handle the tricky part."},
+ {"id":"c6","where":"PR #430 (Sneha)","author":"maintainer_b","text":"Needs tests. Also the function is doing three things; split it up."},
+ {"id":"c7","where":"Discord #ml-track","author":"mentor_meera","text":"Great question Ritika! Check how the collate_fn handles padding."}
+]

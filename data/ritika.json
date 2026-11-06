@@ -1,0 +1,12 @@
+{
+  "id": "p09",
+  "name": "Ritika J.",
+  "location": "Patna, IN",
+  "year": "First-year B.Tech CS",
+  "track": "ml",
+  "skills": ["Python (intermediate)", "NumPy", "pandas", "basic PyTorch from a course", "Git basics"],
+  "hours_per_week": 6,
+  "constraints": "Exams in 3 weeks; shared laptop in the evenings",
+  "goal": "First real ML contribution I can put on my internship applications",
+  "self_description_draft": "I just helped fix a small bug in a data loader and updated some docs."
+}

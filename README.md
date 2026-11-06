@@ -26,7 +26,7 @@ Momentum is that system. For each woman, it matches her to an issue that fits he
 | Tone shield / safety watch (one classifier) | `lib/tone.ts` | `POST /api/ai/tone`, `/api/ai/safety` |
 | Proof profile | `lib/proof.ts` | `POST /api/ai/proof` |
 | Momentum agent (tool use; reads review-coach readiness and voice check-ins; **streams its trail live** as NDJSON) | `lib/momentum.ts` | `POST /api/momentum` `{signals?}` |
-| **Discord / Slack integration**: Approve & send posts to a channel; safety, tone and mentor alerts post to #organizers (simulated until a webhook is set) | `lib/notify.ts` | `GET/POST /api/notify` |
+| **Discord (visual mock)**: Approve & send and organizer alerts show a Discord-style post preview; nothing is actually sent | `app/components/ui.tsx` (`SendButton`) | none |
 | Metrics + backtest (no Claude) | `lib/metrics.ts` | client-side |
 
 Every Claude feature has a mock response, so the whole demo runs offline. Set `ANTHROPIC_API_KEY` to go live.

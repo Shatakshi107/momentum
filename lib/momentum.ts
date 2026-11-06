@@ -24,17 +24,22 @@ export type Action = {
   urgency: "today" | "this_week" | "watch";
 };
 
-export async function runMomentum(question: string): Promise<{ summary: string; actions: Action[]; mock: boolean }> {
+export type TrailStep = { tool: string; detail: string };
+export type MomentumResult = { summary: string; actions: Action[]; trail: TrailStep[]; mock: boolean };
+
+export async function runMomentum(question: string): Promise<MomentumResult> {
   if (isMock()) return mockRun();
 
   const actions: Action[] = [];
+  const trail: TrailStep[] = []; // what the agent looked at, in order, for the UI's activity trail
 
   const listParticipants = betaZodTool({
     name: "list_participants",
     description: "List every participant with mentor, track and the day of their most recent activity. Call this first.",
     inputSchema: z.object({}),
-    run: async () =>
-      JSON.stringify({
+    run: async () => {
+      trail.push({ tool: "list_participants", detail: `Scanned all ${cohort.participants.length} participants` });
+      return JSON.stringify({
         today: cohort.today,
         participants: cohort.participants.map((p) => ({
           id: p.id,
@@ -44,7 +49,8 @@ export async function runMomentum(question: string): Promise<{ summary: string; 
           last_activity_day: p.events.at(-1)?.day ?? null,
           open_prs: p.open_prs.length,
         })),
-      }),
+      });
+    },
   });
 
   const getParticipant = betaZodTool({
@@ -52,6 +58,7 @@ export async function runMomentum(question: string): Promise<{ summary: string; 
     description: "Full activity timeline and open PRs (with who the PR is waiting on) for one participant.",
     inputSchema: z.object({ id: z.string() }),
     run: async ({ id }) => {
+      trail.push({ tool: "get_participant", detail: `Read ${cohort.participants.find((x) => x.id === id)?.name ?? id}'s timeline and open PRs` });
       const p = cohort.participants.find((x) => x.id === id);
       return p ? JSON.stringify(publicView(p)) : `No participant ${id}`;
     },
@@ -61,7 +68,10 @@ export async function runMomentum(question: string): Promise<{ summary: string; 
     name: "get_mentors",
     description: "Mentor load and responsiveness (days since last reply to any mentee).",
     inputSchema: z.object({}),
-    run: async () => JSON.stringify(cohort.mentors),
+    run: async () => {
+      trail.push({ tool: "get_mentors", detail: "Checked mentor load and reply times" });
+      return JSON.stringify(cohort.mentors);
+    },
   });
 
   const proposeAction = betaZodTool({
@@ -78,6 +88,7 @@ export async function runMomentum(question: string): Promise<{ summary: string; 
     }),
     run: async (input) => {
       actions.push(input);
+      trail.push({ tool: "propose_action", detail: `Proposed: ${input.action.replaceAll("_", " ")} for ${cohort.participants.find((x) => x.id === input.participant_id)?.name ?? input.participant_id}` });
       return "recorded";
     },
   });
@@ -96,18 +107,27 @@ A participant going quiet is a symptom. Find the cause, then fix the cause:
 - Merged and then silent -> celebrate and suggest a next issue.
 - An open PR with coach_readiness "needs_another_pass" that she hasn't touched for 3+ days since coached_on_day is a stall: she has feedback she hasn't acted on.
 - A PR with coach_readiness "ready_for_human_review" still waiting on a maintainer is the program's fault.
-Investigate with the tools, call propose_action for each person who needs attention, then finish with a summary for the organizer: plain text, no markdown, at most 3 sentences. Lead with the most important fix.`,
+Investigate with the tools, call propose_action for each person who needs attention, then finish with a summary for the organizer: plain text, no markdown, at most 3 short sentences and under 70 words. Lead with the most important fix.`,
     messages: [{ role: "user", content: question }],
     tools: [listParticipants, getParticipant, getMentors, proposeAction],
   });
 
   const summary = final.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
-  return { summary, actions, mock: false };
+  return { summary, actions, trail, mock: false };
 }
 
-function mockRun(): { summary: string; actions: Action[]; mock: boolean } {
+function mockRun(): MomentumResult {
   return {
     mock: true,
+    trail: [
+      { tool: "list_participants", detail: "Scanned all 12 participants" },
+      { tool: "get_mentors", detail: "Checked mentor load and reply times" },
+      { tool: "get_participant", detail: "Read Jasmine T.'s timeline and open PRs" },
+      { tool: "get_participant", detail: "Read Maya R.'s timeline and open PRs" },
+      { tool: "get_participant", detail: "Read Sofia M.'s timeline and open PRs" },
+      { tool: "propose_action", detail: "Proposed: escalate review to maintainer for Jasmine T." },
+      { tool: "propose_action", detail: "Proposed: reassign mentor for Maya R." },
+    ],
     summary:
       "6 of 12 participants need attention. Two are stalled by us, not by them: Jasmine's PR has waited 15 days on a maintainer, and Maya asked Mentor Nicole for help twice with no reply. Fix those two today.",
     actions: [

@@ -10,38 +10,64 @@ export default function Home() {
   const [escalations, setEscalations] = useState<string[]>([]);
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Momentum</h1>
-          <p className="mt-1 max-w-xl text-sm text-neutral-500">
-            Keeps women in open-source mentorship programs moving, from first issue to second PR.
-          </p>
-        </div>
-        <div className="flex rounded-lg border border-neutral-200 p-1 text-sm dark:border-neutral-800">
-          {(
-            [
-              ["journey", "Maya's journey"],
-              ["program", "Program view"],
-            ] as const
-          ).map(([id, text]) => (
-            <button
-              key={id}
-              onClick={() => setMode(id)}
-              className={`rounded-md px-3 py-1.5 font-medium transition ${mode === id ? "bg-violet-600 text-white" : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"}`}
-            >
-              {text}
-            </button>
-          ))}
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-10 border-b border-line bg-bg/85 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand text-brand-ink" aria-hidden>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 12 L6 7 L9 10 L14 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 3 H14 V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+            <span className="font-display text-xl font-medium tracking-tight">Momentum</span>
+          </div>
+          <div className="ml-auto flex rounded-full border border-line bg-surface p-1 text-sm shadow-card">
+            {(
+              [
+                ["journey", "Maya's journey", "Journey"],
+                ["program", "Program view", "Program"],
+              ] as const
+            ).map(([id, text, short]) => (
+              <button
+                key={id}
+                onClick={() => setMode(id)}
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition sm:px-4 ${mode === id ? "bg-ink text-bg" : "text-muted hover:text-ink"}`}
+              >
+                <span className="sm:hidden">{short}</span>
+                <span className="hidden sm:inline">{text}</span>
+                {id === "program" && escalations.length > 0 && mode !== "program" && <span className="ml-1.5 inline-block h-2 w-2 rounded-full bg-brand" />}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
-      {/* Both stay mounted so results survive switching views during the demo. */}
-      <div hidden={mode !== "journey"}>
-        <Journey onEscalate={(b) => setEscalations((e) => (e.includes(b) ? e : [...e, b]))} />
-      </div>
-      <div hidden={mode !== "program"}>
-        <Program escalations={escalations} />
-      </div>
-    </main>
+
+      <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+        <section className="mb-10 max-w-3xl">
+          <h1 className="font-display text-4xl font-medium leading-[1.1] tracking-tight sm:text-5xl">
+            {mode === "journey" ? (
+              <>From first issue to <em className="text-brand">second PR</em>.</>
+            ) : (
+              <>See who&apos;s slipping <em className="text-brand">before</em> they&apos;re gone.</>
+            )}
+          </h1>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">
+            {mode === "journey"
+              ? "Momentum keeps women in open-source mentorship programs moving. Follow Maya through the five moments where most first-timers quit."
+              : "One co-pilot for organizers, mentors and maintainers: it finds why people stall, fixes the cause, and measures who stays."}
+          </p>
+        </section>
+
+        {/* Both stay mounted so results survive switching views during the demo. */}
+        <div hidden={mode !== "journey"}>
+          <Journey onEscalate={(b) => setEscalations((e) => (e.includes(b) ? e : [...e, b]))} />
+        </div>
+        <div hidden={mode !== "program"}>
+          <Program escalations={escalations} />
+        </div>
+      </main>
+
+      <footer className="border-t border-line py-6 text-center text-xs text-muted">
+        Built with Claude · Code with Claude: Women in AI Hackathon 2026 · Demo cohort is synthetic
+      </footer>
+    </div>
   );
 }

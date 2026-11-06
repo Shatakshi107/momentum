@@ -1,0 +1,491 @@
+{
+ "program": "Demo Summer of Code 2026 (synthetic)",
+ "today": 21,
+ "mentors": [
+  {
+   "name": "Rahul",
+   "mentees": 4,
+   "days_since_last_reply": 2
+  },
+  {
+   "name": "Meera",
+   "mentees": 4,
+   "days_since_last_reply": 9
+  },
+  {
+   "name": "Arjun",
+   "mentees": 4,
+   "days_since_last_reply": 4
+  }
+ ],
+ "participants": [
+  {
+   "id": "p01",
+   "name": "Ananya R.",
+   "location": "Jaipur, IN",
+   "track": "frontend",
+   "mentor": "Rahul",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 3,
+     "type": "commit"
+    },
+    {
+     "day": 5,
+     "type": "pr_opened"
+    },
+    {
+     "day": 7,
+     "type": "review_received"
+    },
+    {
+     "day": 8,
+     "type": "review_addressed"
+    },
+    {
+     "day": 10,
+     "type": "pr_merged"
+    },
+    {
+     "day": 12,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 15,
+     "type": "commit"
+    },
+    {
+     "day": 18,
+     "type": "pr_opened"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#412",
+     "waiting_on": "maintainer",
+     "days_waiting": 3
+    }
+   ],
+   "_outcome_dropped_on_day": null
+  },
+  {
+   "id": "p02",
+   "name": "Fatima S.",
+   "location": "Lagos, NG",
+   "track": "backend",
+   "mentor": "Meera",
+   "events": [
+    {
+     "day": 2,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 4,
+     "type": "commit"
+    },
+    {
+     "day": 6,
+     "type": "pr_opened"
+    },
+    {
+     "day": 13,
+     "type": "message_to_mentor"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#398",
+     "waiting_on": "maintainer",
+     "days_waiting": 15
+    }
+   ],
+   "_outcome_dropped_on_day": 24
+  },
+  {
+   "id": "p03",
+   "name": "Kavya M.",
+   "location": "Nagpur, IN",
+   "track": "docs",
+   "mentor": "Rahul",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 2,
+     "type": "pr_opened"
+    },
+    {
+     "day": 4,
+     "type": "review_received"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#377",
+     "waiting_on": "contributor",
+     "days_waiting": 17,
+     "last_review": "blocker: tests missing, 9 comments"
+    }
+   ],
+   "_outcome_dropped_on_day": 25
+  },
+  {
+   "id": "p04",
+   "name": "Maria L.",
+   "location": "Manila, PH",
+   "track": "frontend",
+   "mentor": "Arjun",
+   "events": [
+    {
+     "day": 3,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 11,
+     "type": "message_to_mentor"
+    },
+    {
+     "day": 14,
+     "type": "message_to_mentor"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": 22
+  },
+  {
+   "id": "p05",
+   "name": "Sneha P.",
+   "location": "Bhopal, IN",
+   "track": "ml",
+   "mentor": "Meera",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 2,
+     "type": "commit"
+    },
+    {
+     "day": 4,
+     "type": "commit"
+    },
+    {
+     "day": 6,
+     "type": "pr_opened"
+    },
+    {
+     "day": 8,
+     "type": "review_received"
+    },
+    {
+     "day": 9,
+     "type": "review_addressed"
+    },
+    {
+     "day": 11,
+     "type": "pr_merged"
+    },
+    {
+     "day": 13,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 16,
+     "type": "commit"
+    },
+    {
+     "day": 19,
+     "type": "commit"
+    },
+    {
+     "day": 20,
+     "type": "pr_opened"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#430",
+     "waiting_on": "maintainer",
+     "days_waiting": 1
+    }
+   ],
+   "_outcome_dropped_on_day": null
+  },
+  {
+   "id": "p06",
+   "name": "Aisha K.",
+   "location": "Nairobi, KE",
+   "track": "backend",
+   "mentor": "Arjun",
+   "events": [
+    {
+     "day": 2,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 5,
+     "type": "commit"
+    },
+    {
+     "day": 7,
+     "type": "pr_opened"
+    },
+    {
+     "day": 9,
+     "type": "review_received"
+    },
+    {
+     "day": 10,
+     "type": "review_addressed"
+    },
+    {
+     "day": 12,
+     "type": "pr_merged"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": 26
+  },
+  {
+   "id": "p07",
+   "name": "Priya D.",
+   "location": "Kochi, IN",
+   "track": "frontend",
+   "mentor": "Rahul",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 9,
+     "type": "issue_unassigned"
+    },
+    {
+     "day": 10,
+     "type": "issue_assigned"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": null
+  },
+  {
+   "id": "p08",
+   "name": "Lucia G.",
+   "location": "Bogotá, CO",
+   "track": "docs",
+   "mentor": "Meera",
+   "events": [
+    {
+     "day": 2,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 3,
+     "type": "pr_opened"
+    },
+    {
+     "day": 5,
+     "type": "review_received"
+    },
+    {
+     "day": 6,
+     "type": "review_addressed"
+    },
+    {
+     "day": 7,
+     "type": "pr_merged"
+    },
+    {
+     "day": 8,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 10,
+     "type": "pr_opened"
+    },
+    {
+     "day": 12,
+     "type": "review_received"
+    },
+    {
+     "day": 13,
+     "type": "review_addressed"
+    },
+    {
+     "day": 15,
+     "type": "pr_merged"
+    },
+    {
+     "day": 16,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 18,
+     "type": "commit"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": null
+  },
+  {
+   "id": "p09",
+   "name": "Ritika J.",
+   "location": "Patna, IN",
+   "track": "ml",
+   "mentor": "Arjun",
+   "events": [
+    {
+     "day": 4,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 6,
+     "type": "commit"
+    },
+    {
+     "day": 8,
+     "type": "pr_opened"
+    },
+    {
+     "day": 10,
+     "type": "review_received"
+    },
+    {
+     "day": 11,
+     "type": "message_to_mentor"
+    },
+    {
+     "day": 15,
+     "type": "message_to_mentor"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#401",
+     "waiting_on": "contributor",
+     "days_waiting": 11,
+     "last_review": "should_fix: 3 comments, contributor asked mentor for help twice, no reply"
+    }
+   ],
+   "_outcome_dropped_on_day": 23
+  },
+  {
+   "id": "p10",
+   "name": "Grace O.",
+   "location": "Accra, GH",
+   "track": "backend",
+   "mentor": "Rahul",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 3,
+     "type": "commit"
+    },
+    {
+     "day": 5,
+     "type": "pr_opened"
+    },
+    {
+     "day": 6,
+     "type": "review_received"
+    },
+    {
+     "day": 7,
+     "type": "review_addressed"
+    },
+    {
+     "day": 8,
+     "type": "pr_merged"
+    },
+    {
+     "day": 9,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 13,
+     "type": "commit"
+    },
+    {
+     "day": 17,
+     "type": "pr_opened"
+    },
+    {
+     "day": 19,
+     "type": "review_received"
+    }
+   ],
+   "open_prs": [
+    {
+     "pr": "#425",
+     "waiting_on": "contributor",
+     "days_waiting": 2,
+     "last_review": "nit: 2 comments"
+    }
+   ],
+   "_outcome_dropped_on_day": null
+  },
+  {
+   "id": "p11",
+   "name": "Neha T.",
+   "location": "Indore, IN",
+   "track": "frontend",
+   "mentor": "Arjun",
+   "events": [
+    {
+     "day": 5,
+     "type": "issue_assigned"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": null,
+   "_outcome_note": "already inactive 16 days; counts as lost"
+  },
+  {
+   "id": "p12",
+   "name": "Divya S.",
+   "location": "Chennai, IN",
+   "track": "docs",
+   "mentor": "Meera",
+   "events": [
+    {
+     "day": 1,
+     "type": "issue_assigned"
+    },
+    {
+     "day": 2,
+     "type": "commit"
+    },
+    {
+     "day": 3,
+     "type": "pr_opened"
+    },
+    {
+     "day": 4,
+     "type": "review_received"
+    },
+    {
+     "day": 5,
+     "type": "review_addressed"
+    },
+    {
+     "day": 6,
+     "type": "pr_merged"
+    }
+   ],
+   "open_prs": [],
+   "_outcome_dropped_on_day": 22
+  }
+ ]
+}

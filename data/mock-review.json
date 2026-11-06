@@ -1,0 +1,30 @@
+{
+  "readiness": "needs_another_pass",
+  "maintainer_summary": "Adds dark-mode toggle to settings page. Logic is sound; missing persistence and one a11y issue. ~10 min human review once fixed.",
+  "strengths": [
+    "Followed the existing ThemeContext pattern instead of inventing a new one",
+    "Clear PR description that links the issue and includes a screenshot"
+  ],
+  "coaching": [
+    {
+      "file": "src/components/Settings/ThemeToggle.tsx",
+      "line_hint": "L24: const [dark, setDark] = useState(false)",
+      "severity": "should_fix",
+      "what": "The theme resets to light every time the page reloads.",
+      "why": "Issue #388 asks for the choice to be remembered, and the app already stores other preferences in usePreferences().",
+      "question": "Where does the app keep the user's language setting between visits, and could the theme live in the same place?"
+    },
+    {
+      "file": "src/components/Settings/ThemeToggle.tsx",
+      "line_hint": "L31: <div onClick={toggle}>",
+      "severity": "blocker",
+      "what": "The toggle is a clickable div, so keyboard and screen-reader users can't use it.",
+      "why": "The project's CONTRIBUTING.md requires all controls to be keyboard accessible.",
+      "question": "Which HTML element gives you focus and keyboard activation for free?"
+    }
+  ],
+  "understanding_check": [
+    "Why did you read the initial theme from context instead of from the toggle's own state?",
+    "What happens if a user's OS is set to dark mode but they never touch your toggle?"
+  ]
+}

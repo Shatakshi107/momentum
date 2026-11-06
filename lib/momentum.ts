@@ -1,0 +1,141 @@
+import { z } from "zod";
+import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
+import { client, MODEL, FALLBACK, isMock } from "./claude";
+import cohort from "@/data/cohort.json";
+
+// The Momentum agent investigates the cohort with tools, diagnoses WHY each
+// person is stalled, and proposes the action that fixes the cause.
+// Hidden outcome fields (prefixed "_outcome") are never shown to the agent;
+// they exist only for the backtest you build on hackathon day.
+
+type Participant = (typeof cohort.participants)[number];
+
+function publicView(p: Participant) {
+  // Strip ground-truth fields so the agent can't peek at the answer key.
+  return Object.fromEntries(Object.entries(p).filter(([k]) => !k.startsWith("_outcome")));
+}
+
+export type Action = {
+  participant_id: string;
+  diagnosis: "waiting_on_maintainer" | "overwhelmed_by_review" | "stuck_starting" | "mentor_unresponsive" | "needs_next_issue" | "on_track";
+  evidence: string;
+  action: "escalate_review_to_maintainer" | "break_review_into_steps" | "assign_smaller_issue" | "reassign_mentor" | "suggest_next_issue" | "send_message" | "none";
+  message_draft: string;
+  urgency: "today" | "this_week" | "watch";
+};
+
+export async function runMomentum(question: string): Promise<{ summary: string; actions: Action[]; mock: boolean }> {
+  if (isMock()) return mockRun();
+
+  const actions: Action[] = [];
+
+  const listParticipants = betaZodTool({
+    name: "list_participants",
+    description: "List every participant with mentor, track and the day of their most recent activity. Call this first.",
+    inputSchema: z.object({}),
+    run: async () =>
+      JSON.stringify({
+        today: cohort.today,
+        participants: cohort.participants.map((p) => ({
+          id: p.id,
+          name: p.name,
+          mentor: p.mentor,
+          track: p.track,
+          last_activity_day: p.events.at(-1)?.day ?? null,
+          open_prs: p.open_prs.length,
+        })),
+      }),
+  });
+
+  const getParticipant = betaZodTool({
+    name: "get_participant",
+    description: "Full activity timeline and open PRs (with who the PR is waiting on) for one participant.",
+    inputSchema: z.object({ id: z.string() }),
+    run: async ({ id }) => {
+      const p = cohort.participants.find((x) => x.id === id);
+      return p ? JSON.stringify(publicView(p)) : `No participant ${id}`;
+    },
+  });
+
+  const getMentors = betaZodTool({
+    name: "get_mentors",
+    description: "Mentor load and responsiveness (days since last reply to any mentee).",
+    inputSchema: z.object({}),
+    run: async () => JSON.stringify(cohort.mentors),
+  });
+
+  const proposeAction = betaZodTool({
+    name: "propose_action",
+    description:
+      "Record ONE diagnosis and action for a participant. Call once per participant who needs attention. The message_draft must be specific to their situation, warm, and under 80 words.",
+    inputSchema: z.object({
+      participant_id: z.string(),
+      diagnosis: z.enum(["waiting_on_maintainer", "overwhelmed_by_review", "stuck_starting", "mentor_unresponsive", "needs_next_issue", "on_track"]),
+      evidence: z.string().describe("The specific facts from the timeline that support the diagnosis"),
+      action: z.enum(["escalate_review_to_maintainer", "break_review_into_steps", "assign_smaller_issue", "reassign_mentor", "suggest_next_issue", "send_message", "none"]),
+      message_draft: z.string(),
+      urgency: z.enum(["today", "this_week", "watch"]),
+    }),
+    run: async (input) => {
+      actions.push(input);
+      return "recorded";
+    },
+  });
+
+  const final = await client.beta.messages.toolRunner({
+    model: MODEL,
+    max_tokens: 16000,
+    ...FALLBACK,
+    output_config: { effort: "medium" },
+    system: `You are the program co-pilot for an open-source mentorship program for women.
+A participant going quiet is a symptom. Find the cause, then fix the cause:
+- PR waiting on a maintainer for days -> that is the program's fault, escalate it, don't nag her.
+- Heavy review she hasn't answered -> break it into small steps.
+- Assigned but no commits -> offer a smaller issue or a pairing session.
+- Mentor not replying -> reassign or escalate the mentor.
+- Merged and then silent -> celebrate and suggest a next issue.
+Investigate with the tools, call propose_action for each person who needs attention, then finish with a 3-sentence summary for the organizer.`,
+    messages: [{ role: "user", content: question }],
+    tools: [listParticipants, getParticipant, getMentors, proposeAction],
+  });
+
+  const summary = final.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
+  return { summary, actions, mock: false };
+}
+
+function mockRun(): { summary: string; actions: Action[]; mock: boolean } {
+  return {
+    mock: true,
+    summary:
+      "5 of 12 participants need attention this week. Two are stalled by us, not by them: Fatima's PR has waited 15 days on a maintainer, and Ritika asked Mentor Meera for help twice with no reply. Fix those two today.",
+    actions: [
+      {
+        participant_id: "p02",
+        diagnosis: "waiting_on_maintainer",
+        evidence: "PR #398 opened day 6, waiting on maintainer for 15 days; she messaged her mentor on day 13.",
+        action: "escalate_review_to_maintainer",
+        message_draft:
+          "Hi Fatima, your PR #398 is solid and the delay is on our side, not yours. I've asked a maintainer to review it by Friday. Thanks for your patience!",
+        urgency: "today",
+      },
+      {
+        participant_id: "p09",
+        diagnosis: "mentor_unresponsive",
+        evidence: "Asked mentor Meera for help on day 11 and day 15; Meera last replied 9 days ago.",
+        action: "reassign_mentor",
+        message_draft:
+          "Hi Ritika, sorry your questions on #401 went unanswered. Arjun is going to pair with you for 20 minutes this week to get the 3 review comments sorted.",
+        urgency: "today",
+      },
+      {
+        participant_id: "p03",
+        diagnosis: "overwhelmed_by_review",
+        evidence: "PR #377 got 9 comments including a blocker (missing tests) on day 4; no activity for 17 days.",
+        action: "break_review_into_steps",
+        message_draft:
+          "Hi Kavya, 9 comments is a lot, and most are small. Want to start with just the test? Here's a similar test in the repo you can copy the shape of.",
+        urgency: "this_week",
+      },
+    ],
+  };
+}

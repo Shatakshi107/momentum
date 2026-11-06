@@ -6,7 +6,7 @@ import cohort from "@/data/cohort.json";
 import type { Action, MomentumEvent, MomentumResult, TrailStep } from "@/lib/momentum";
 import type { Safety } from "@/lib/tone";
 import { backtest, participantsById, mentors } from "@/lib/metrics";
-import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader } from "./ui";
+import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader, SendButton, IntegrationBadge } from "./ui";
 
 const TABS = ["Cohort", "Mentor inbox", "Safety watch", "Impact"] as const;
 const urgencyTone = { today: "coral", this_week: "amber", watch: "neutral" } as const;
@@ -107,7 +107,9 @@ function KpiStrip() {
   return (
     <div className="mb-8">
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-sm font-medium">{cohort.program.replace(" (US, synthetic)", "")}</p>
+        <p className="flex flex-wrap items-center gap-2 text-sm font-medium">
+          {cohort.program.replace(" (US, synthetic)", "")} <IntegrationBadge />
+        </p>
         <p className="text-xs text-muted">
           <span className="font-medium text-coral">{fmt(n.at_risk_this_week)} at risk this week</span> · demo below: {cohort.pod}
         </p>
@@ -127,7 +129,6 @@ function KpiStrip() {
 
 function ActionCard({ a, compact = false }: { a: Action; compact?: boolean }) {
   const p = participantsById[a.participant_id];
-  const [sent, setSent] = useState(false);
   const [why, setWhy] = useState(!compact);
   return (
     <div className="relative overflow-hidden rounded-2xl border border-line bg-surface p-5 pl-6 shadow-card">
@@ -153,11 +154,9 @@ function ActionCard({ a, compact = false }: { a: Action; compact?: boolean }) {
         <p className="mb-1 text-xs font-medium text-muted">Drafted message</p>
         <p className="text-sm leading-relaxed">{a.message_draft}</p>
         <div className="mt-3 flex justify-end">
-          {sent ? (
-            <span className="text-xs font-medium text-mint">✓ Sent to {p?.name.split(" ")[0]}</span>
-          ) : (
-            <Button size="sm" variant="soft" onClick={() => setSent(true)}>Approve &amp; send</Button>
-          )}
+          <SendButton payload={{ kind: "message", title: `👋 ${p?.name.split(" ")[0] ?? "Hi"}, a note from the pod 14 team`, text: a.message_draft }}>
+            Approve &amp; send
+          </SendButton>
         </div>
       </div>
     </div>
@@ -265,6 +264,9 @@ function MentorInbox({ data, run, loading, escalations }: { data: MomentumResult
                       <Avatar name="Maya R." size={18} /> Question from Maya
                     </p>
                     <p className="whitespace-pre-line text-sm leading-relaxed">{brief}</p>
+                    <div className="mt-3 flex justify-end">
+                      <SendButton payload={{ kind: "alert", title: `Question for mentor ${m.name} from Maya R.`, text: brief }}>Send to {m.name} on Discord</SendButton>
+                    </div>
                   </div>
                 ))}
                 {items.map((a) => <ActionCard key={a.participant_id} a={a} compact />)}
@@ -301,6 +303,25 @@ function SafetyWatch() {
               <MockBadge on={d.mock} />
             </div>
             <p className="font-display text-lg leading-relaxed">{d.summary}</p>
+            {flagged > 0 && (
+              <div className="mt-4">
+                <SendButton
+                  payload={{
+                    kind: "alert",
+                    title: `Safety watch: ${flagged} comment${flagged > 1 ? "s" : ""} need an organizer`,
+                    text: d.summary,
+                    fields: d.items
+                      .filter((i) => i.flag_organizer)
+                      .map((i) => {
+                        const t = threads.find((x) => x.id === i.id);
+                        return { name: `${t?.author ?? i.id} · ${t?.where ?? ""}`, value: `${i.category}${i.bias ? " (identity-based)" : ""}: ${i.flag_reason}` };
+                      }),
+                  }}
+                >
+                  Alert #organizers on Discord
+                </SendButton>
+              </div>
+            )}
           </div>
           {threads.map((t) => {
             const r = byId[t.id];

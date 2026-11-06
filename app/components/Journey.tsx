@@ -9,7 +9,7 @@ import type { Checkin } from "@/lib/checkin";
 import type { Review } from "@/lib/review";
 import type { Tone } from "@/lib/tone";
 import type { Proof } from "@/lib/proof";
-import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader, FitRing } from "./ui";
+import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader, FitRing, SendButton } from "./ui";
 
 const STEPS = [
   { name: "Match", hint: "Find a first issue" },
@@ -457,9 +457,12 @@ function ShieldStep() {
             </Card>
           </div>
           {d.flag_organizer && (
-            <div className="flex gap-3 rounded-2xl border border-coral/40 bg-coral-soft p-4 text-sm">
+            <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-coral/40 bg-coral-soft p-4 text-sm">
               <span className="text-coral">⚑</span>
-              <p><span className="font-semibold text-coral">Flagged to the organizer.</span> {d.flag_reason}</p>
+              <p className="flex-1"><span className="font-semibold text-coral">Flagged to the organizer.</span> {d.flag_reason}</p>
+              <SendButton payload={{ kind: "alert", title: `Tone flag on Maya's PR #547 (${d.category})`, text: d.flag_reason, fields: [{ name: "Comment", value: sent }] }}>
+                Alert #organizers
+              </SendButton>
             </div>
           )}
         </div>

@@ -156,3 +156,60 @@ export function FitRing({ value }: { value: number }) {
     </div>
   );
 }
+
+type NotifyPayload = { kind: "message" | "alert"; title: string; text: string; fields?: { name: string; value: string }[] };
+
+export function useIntegrations() {
+  const [status, setStatus] = useState<{ discord: boolean; slack: boolean } | null>(null);
+  useEffect(() => {
+    fetch("/api/notify")
+      .then((r) => r.json())
+      .then(setStatus)
+      .catch(() => setStatus({ discord: false, slack: false }));
+  }, []);
+  return status;
+}
+
+export function IntegrationBadge() {
+  const s = useIntegrations();
+  if (!s) return null;
+  const on = [s.discord && "Discord", s.slack && "Slack"].filter(Boolean).join(" + ");
+  return on ? (
+    <Pill tone="mint">● {on} connected</Pill>
+  ) : (
+    <Pill>○ Discord not connected · sends are simulated</Pill>
+  );
+}
+
+/** Posts to Discord/Slack through /api/notify. A human always clicks first. */
+export function SendButton({ payload, children }: { payload: NotifyPayload; children: ReactNode }) {
+  const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
+  const [note, setNote] = useState("");
+  async function send() {
+    setState("sending");
+    try {
+      const res = await fetch("/api/notify", { method: "POST", body: JSON.stringify(payload) });
+      const r = (await res.json()) as { delivered?: string[]; simulated?: boolean; errors?: string[]; error?: string };
+      if (!res.ok || r.error) throw new Error(r.error ?? `Failed (${res.status})`);
+      if (r.delivered?.length) {
+        setNote(`✓ Posted to ${r.delivered.join(" + ")}`);
+        setState("done");
+      } else if (r.simulated) {
+        setNote("✓ Sent (simulated: add DISCORD_WEBHOOK_URL to go live)");
+        setState("done");
+      } else throw new Error(r.errors?.join(", ") || "Not delivered");
+    } catch (e) {
+      setNote((e as Error).message);
+      setState("error");
+    }
+  }
+  if (state === "done") return <span className="text-xs font-medium text-mint">{note}</span>;
+  return (
+    <span className="inline-flex items-center gap-2">
+      {state === "error" && <span className="text-xs text-coral">{note}</span>}
+      <Button size="sm" variant={payload.kind === "alert" ? "ghost" : "soft"} onClick={send} loading={state === "sending"}>
+        {children}
+      </Button>
+    </span>
+  );
+}

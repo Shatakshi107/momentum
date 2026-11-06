@@ -31,6 +31,10 @@ Momentum is that system. For each woman, it matches her to an issue that fits he
 
 Every Claude feature has a mock response, so the whole demo runs offline. Set `ANTHROPIC_API_KEY` to go live.
 
+## Demo video
+
+Script, talking points and recording checklist: **[DEMO.md](DEMO.md)**.
+
 ## Run it
 
 ```bash

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Journey from "./components/Journey";
 import Program from "./components/Program";
+import Tour from "./components/Tour";
 
 export default function Home() {
   const [mode, setMode] = useState<"journey" | "program">("journey");
@@ -10,6 +11,12 @@ export default function Home() {
   const [escalations, setEscalations] = useState<string[]>([]);
   // Voice check-ins become fresh evidence for the momentum agent.
   const [signals, setSignals] = useState<string[]>([]);
+  // Open with ?demo to get the Claude-narrated, self-driving demo controls.
+  const demo = useSyncExternalStore(
+    () => () => {},
+    () => new URLSearchParams(window.location.search).has("demo"),
+    () => false,
+  );
 
   return (
     <div className="min-h-screen">
@@ -70,6 +77,7 @@ export default function Home() {
         </div>
       </main>
 
+      {demo && <Tour />}
       <footer className="border-t border-line py-6 text-center text-xs text-muted">
         Built with Claude · Code with Claude: Women in AI Hackathon 2026 · Demo cohort is synthetic
       </footer>

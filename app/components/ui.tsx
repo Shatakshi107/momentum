@@ -2,6 +2,18 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+// Demo cache: the recorded tour pre-runs every live Claude call once, then replays
+// the real responses instantly so the video has no dead air.
+export const demoCache = new Map<string, unknown>();
+export const cacheKey = (path: string, body: object) => path + JSON.stringify(body, (k, v) => (k === "image" ? "img" : v));
+export async function prefetch<T>(path: string, body: object = {}): Promise<T> {
+  const res = await fetch(path, { method: "POST", body: JSON.stringify(body) });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error ?? `${path} failed`);
+  demoCache.set(cacheKey(path, body), json);
+  return json as T;
+}
+
 export function useApi<T>(path: string) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
@@ -9,6 +21,13 @@ export function useApi<T>(path: string) {
   async function run(body: object = {}): Promise<T | null> {
     setLoading(true);
     setError("");
+    const cached = demoCache.get(cacheKey(path, body)) as T | undefined;
+    if (cached) {
+      await new Promise((r) => setTimeout(r, 1200)); // let the "Claude is…" state show briefly
+      setData(cached);
+      setLoading(false);
+      return cached;
+    }
     try {
       const res = await fetch(path, { method: "POST", body: JSON.stringify(body) });
       const json = await res.json();

@@ -1,4 +1,24 @@
-# Momentum: demo video script (target 2:45)
+# Momentum: demo video script (max 3:00)
+
+# Option A (easiest): the Claude-narrated, self-driving demo
+
+The app can record its own demo. Claude narrates (macOS "Samantha" voice) and the tour clicks through the product with captions and title cards.
+
+1. Run the app (`npm run dev`) and open **http://localhost:3000/?demo** in **Chrome**.
+2. In the 🎬 panel (bottom-left), click **1 · Prepare**. It runs every live Claude call once (~1 minute) and caches the real responses, so the recording has no waiting.
+3. Click **▶ Preview** to watch it once (~2:50, with sound).
+4. Click **● Record**. In Chrome's share dialog, choose **this tab**, keep **"Also share tab audio"** on, and click **Share**. Don't touch the page until it finishes.
+5. The video saves to **Downloads** as `momentum-demo.mp4` (or `.webm`).
+
+Narration text: `public/narration/script.json`. Regenerate a clip with:
+```bash
+say -v Samantha -r 190 --file-format=m4af --data-format=aac -o public/narration/02.m4a -f my-text.txt
+```
+
+---
+
+# Option B: record it yourself
+
 
 Covers what the submission asks for: **the problem, why I chose it, constraints, what I built it with, and the workflow.**
 Say the lines in quotes. Do the clicks in brackets. Keep the camera on the product, not slides, except the two title cards.

@@ -6,7 +6,7 @@ import cohort from "@/data/cohort.json";
 import type { Action, MomentumEvent, MomentumResult, TrailStep } from "@/lib/momentum";
 import type { Safety } from "@/lib/tone";
 import { backtest, participantsById, mentors } from "@/lib/metrics";
-import { useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader, SendButton, IntegrationBadge } from "./ui";
+import { demoCache, useApi, Button, Card, Pill, MockBadge, ErrorText, label, Avatar, Thinking, StepHeader, SendButton, IntegrationBadge } from "./ui";
 
 const TABS = ["Cohort", "Mentor inbox", "Safety watch", "Impact"] as const;
 const urgencyTone = { today: "coral", this_week: "amber", watch: "neutral" } as const;
@@ -30,6 +30,18 @@ function useMomentum() {
     setError("");
     setData(null);
     setLive({ trail: [], actions: [] });
+    const replay = demoCache.get("momentum-events") as MomentumEvent[] | undefined;
+    if (replay) {
+      // Demo tour: replay a real earlier run at a watchable pace.
+      for (const e of replay) {
+        await new Promise((r) => setTimeout(r, e.type === "step" ? 260 : 160));
+        if (e.type === "step") setLive((l) => ({ ...l, trail: [...l.trail, e.step] }));
+        else if (e.type === "action") setLive((l) => ({ ...l, actions: [...l.actions, e.action] }));
+        else if (e.type === "done") setData(e.result);
+      }
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/momentum", { method: "POST", body: JSON.stringify({ signals }) });
       if (!res.ok || !res.body) throw new Error(`Request failed (${res.status})`);

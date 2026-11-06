@@ -85,6 +85,7 @@ function Stepper({ step, setStep }: { step: number; setStep: (n: number) => void
       {STEPS.map((s, i) => (
         <li key={s.name} className="relative flex flex-col items-center text-center">
           <button
+            data-step={i}
             onClick={() => setStep(i)}
             aria-current={i === step ? "step" : undefined}
             className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-semibold transition ${
@@ -200,7 +201,7 @@ function MatchStep() {
   );
 }
 
-const ASK_PRESETS = ["What does collate_fn do, and where should my fix go?", "Can I add a skip_empty argument to DataLoader?"];
+export const ASK_PRESETS = ["What does collate_fn do, and where should my fix go?", "Can I add a skip_empty argument to DataLoader?"];
 
 function AskStep({ onEscalate }: { onEscalate: (brief: string) => void }) {
   const api = useApi<Ask & Mock>("/api/ai/ask");
@@ -391,7 +392,7 @@ function ReviewStep() {
 }
 
 const categoryTone = { constructive: "mint", blunt: "neutral", condescending: "amber", hostile: "coral", harassment: "coral" } as const;
-const SHIELD_PRESETS = threads.filter((t) => ["c2", "c5"].includes(t.id));
+export const SHIELD_PRESETS = threads.filter((t) => ["c2", "c5"].includes(t.id));
 
 function ShieldStep() {
   const api = useApi<Tone & Mock>("/api/ai/tone");
@@ -546,7 +547,7 @@ function ProofStep() {
 }
 
 /** Draws a realistic terminal screenshot on a canvas, so the vision demo needs no image files. */
-function sampleErrorScreenshot(): string {
+export function sampleErrorScreenshot(): string {
   const lines: [string, string][] = [
     ["#9aa5ce", "maya@macbook tinyml-kit % pytest -q tests/test_loader.py"],
     ["#e0e0e0", "ImportError while importing test module '/Users/maya/tinyml-kit/tests/test_loader.py'."],
@@ -582,7 +583,7 @@ function sampleErrorScreenshot(): string {
   return c.toDataURL("image/png").split(",")[1];
 }
 
-const SAMPLE_CHECKIN =
+export const SAMPLE_CHECKIN =
   "Hey, it's Maya. Um, I've been stuck on the tests for like three days. I reproduced the crash, which felt good, but I'm not sure my fix is even in the right file. Midterms are coming up so I basically only have my BART ride. Honestly I'm kind of wondering if this is for me.";
 
 type SR = {

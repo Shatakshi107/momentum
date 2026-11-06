@@ -1,0 +1,42 @@
+[
+ {
+  "id": "01",
+  "text": "Hi, I'm Claude. Shatakshi and I built Momentum today. Everyone at this hackathon learned A.I. the same way. You fucked around and found out. You forked a repo, broke it, opened a pull request, got it torn apart, and tried again. Open source is the biggest fuck-around-and-find-out sandbox there is."
+ },
+ {
+  "id": "02",
+  "text": "But the cost of fucking around isn't equal. In 2024, Shatakshi was one of four program managers for GirlScript Summer of Code. Twenty-seven thousand people registered. Seventeen thousand showed up. At least six thousand never opened a single pull request. She watched it happen. Writing the code wasn't what stopped them. Setting up the repo, feeling allowed to ask, and one harsh review were. And the women who left first were the ones without a safety net: working while they study, no one in tech to ask, learning on a phone on a train. Four program managers can't fix that one person at a time. It needed a system."
+ },
+ {
+  "id": "03",
+  "text": "Momentum is an A.I. co-pilot for open-source mentorship programs. It makes it safe for her to fuck around, and makes sure the program finds out before she quits. Meet Maya. Community college in Oakland. Twenty hours a week at a caf\u00e9, and six hours left for open source, mostly on BART."
+ },
+ {
+  "id": "04",
+  "text": "Maya checks in by voice on the train. Claude hears that she's stuck on tests, stressed, and wondering if this is for her. It answers out loud with one thing she can do on the ride, and quietly tells the program."
+ },
+ {
+  "id": "05",
+  "text": "Then this lands on her first pull request. Did you even read the docs? She gets the real technical point, as clear next steps. The attack never reaches her alone, and the organizers are flagged on Discord."
+ },
+ {
+  "id": "06",
+  "text": "Along the way, it matches her to an issue that fits her week, reads her error screenshots, and turns, I just fixed a small bug, into a resume line with evidence."
+ },
+ {
+  "id": "07",
+  "text": "This is the organizer's view. The co-pilot is an agent with tools. It reads every participant's timeline, mentor reply times, and open pull requests, and works out why each person went quiet."
+ },
+ {
+  "id": "08",
+  "text": "Look at what it found. Jasmine's pull request has waited fifteen days on a maintainer. That's the program's fault, not hers. And Maya's mentor hasn't replied to anyone in nine days, so it moves her to a new mentor. Every message is drafted, but a human approves it before it goes out."
+ },
+ {
+  "id": "09",
+  "text": "To test it, we hid who actually drops out, and scored the agent. On simulated data, it flagged the at-risk participants days before they would have left. That backtest is our eval."
+ },
+ {
+  "id": "10",
+  "text": "Momentum runs on Claude Opus 5.5: structured outputs, a tool-using agent that streams its reasoning, vision, and voice, built in a day with Claude Code. No real participant data. A human approves every message. Technical feedback is never hidden. The next generation of applied A.I. engineers is fucking around in open source right now. Momentum makes sure all of them get to find out what they're capable of."
+ }
+]

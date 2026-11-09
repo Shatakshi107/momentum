@@ -36,6 +36,25 @@ const ICON_PATHS: Record<string, ReactNode> = {
       <path d="M8 9h8M8 12h5" />
     </>
   ),
+  target: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="12" cy="12" r="0.8" fill="currentColor" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M4 8h3l2-2.5h6L17 8h3v11H4V8z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
+  badge: (
+    <>
+      <circle cx="12" cy="9" r="5" />
+      <path d="M9 13.5L8 21l4-2 4 2-1-7.5" />
+    </>
+  ),
   spark: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8L18 16z" />,
 };
 function Icon({ name, size = 20 }: { name: keyof typeof ICON_PATHS; size?: number }) {
@@ -46,11 +65,14 @@ function Icon({ name, size = 20 }: { name: keyof typeof ICON_PATHS; size?: numbe
   );
 }
 
+// Her journey, in order. The co-pilot is the hero on the right.
 const FEATURES = [
+  { icon: "target", name: "Issue matchmaker", line: "An issue that fits her real week." },
+  { icon: "camera", name: "Private ask", line: "Any question, even a screenshot." },
   { icon: "mic", name: "Voice check-ins", line: "Thirty seconds, out loud, on the train." },
-  { icon: "shield", name: "Tone shield", line: "The feedback, without the attack." },
   { icon: "chat", name: "Review coach", line: "Questions that teach, not rewrites." },
-  { icon: "spark", name: "AI co-pilot", line: "Finds why people stall, before they leave." },
+  { icon: "shield", name: "Tone shield", line: "The feedback, without the attack." },
+  { icon: "badge", name: "Proof profile", line: "Her work, in words that don't undersell it." },
 ] as const;
 
 function Float({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -72,14 +94,14 @@ export default function Showcase() {
             <span className="font-display text-3xl font-medium tracking-tight">Momentum</span>
           </div>
 
-          <h1 className="mt-14 font-display text-6xl font-medium leading-[1.02] tracking-tight xl:text-[5.5rem]">
+          <h1 className="mt-12 font-display text-6xl font-medium leading-[1.02] tracking-tight xl:text-[5.5rem]">
             From first issue
             <br />
             to <em className="text-brand">second PR</em>.
           </h1>
           <p className="mt-6 max-w-md text-xl leading-relaxed text-muted">The AI co-pilot for women in open-source mentorship programs.</p>
 
-          <ul className="mt-12 grid max-w-lg gap-5 sm:grid-cols-2">
+          <ul className="mt-12 grid max-w-xl gap-x-6 gap-y-5 sm:grid-cols-2">
             {FEATURES.map((f) => (
               <li key={f.name} className="flex gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"><Icon name={f.icon} /></span>
@@ -91,7 +113,13 @@ export default function Showcase() {
             ))}
           </ul>
 
-          <p className="mt-14 text-sm text-muted">
+          <div className="mt-8 flex max-w-[520px] gap-3 border-t border-line pt-5 text-sm text-muted">
+            <span className="mt-0.5 text-brand"><Icon name="spark" size={16} /></span>
+            <p>
+              <span className="font-medium text-ink">For organizers:</span> mentor inbox, safety watch, Discord alerts and retention tracking.
+            </p>
+          </div>
+          <p className="mt-10 text-sm text-muted">
             Built with <span className="font-medium text-ink">Claude</span>
           </p>
         </section>

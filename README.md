@@ -1,5 +1,9 @@
 # Momentum
 
+![Momentum: from first issue to second PR](docs/showcase.png)
+
+**▶ [Watch the 2:40 demo](https://github.com/Shatakshi107/momentum/releases/tag/demo-video)** · Showcase page: `/showcase`
+
 **An AI co-pilot for open-source mentorship programs (GirlScript Summer of Code, Outreachy, GSoC-style cohorts) that keeps every participant moving and coaches every PR before a maintainer has to look at it.**
 
 Built for *Code with Claude: Women in AI Hackathon* (Anthropic SF, Nov 6, 2026). Track: **Education and opportunity**.

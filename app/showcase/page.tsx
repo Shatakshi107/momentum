@@ -1,12 +1,11 @@
 "use client";
 
-// A single, screenshot-ready "this is my app" page. Static by design: no API calls,
-// so it always renders instantly and identically. Open /showcase.
+// Screenshot-ready "this is my app" page. Static by design (no API calls). Open /showcase.
 
 import type { ReactNode } from "react";
-import { Avatar, DiscordLogo } from "../components/ui";
+import { Avatar } from "../components/ui";
 
-function Logo({ size = 36 }: { size?: number }) {
+function Logo({ size = 40 }: { size?: number }) {
   return (
     <span className="flex items-center justify-center rounded-xl bg-brand text-brand-ink" style={{ width: size, height: size }} aria-hidden>
       <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 16 16" fill="none">
@@ -17,182 +16,148 @@ function Logo({ size = 36 }: { size?: number }) {
   );
 }
 
-function Tile({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-3xl border border-line bg-surface p-5 shadow-card ${className}`}>{children}</div>;
+// Simple line icons (crisper than emoji at screenshot size).
+const ICON_PATHS: Record<string, ReactNode> = {
+  mic: (
+    <>
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z" />
+      <path d="M9 12l2 2 4-4" />
+    </>
+  ),
+  chat: (
+    <>
+      <path d="M4 5h16v11H9l-5 4V5z" />
+      <path d="M8 9h8M8 12h5" />
+    </>
+  ),
+  spark: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM18 16l.8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8L18 16z" />,
+};
+function Icon({ name, size = 20 }: { name: keyof typeof ICON_PATHS; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {ICON_PATHS[name]}
+    </svg>
+  );
 }
 
-function Kicker({ children, tone = "text-brand" }: { children: ReactNode; tone?: string }) {
-  return <p className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${tone}`}>{children}</p>;
+const FEATURES = [
+  { icon: "mic", name: "Voice check-ins", line: "Thirty seconds, out loud, on the train." },
+  { icon: "shield", name: "Tone shield", line: "The feedback, without the attack." },
+  { icon: "chat", name: "Review coach", line: "Questions that teach, not rewrites." },
+  { icon: "spark", name: "AI co-pilot", line: "Finds why people stall, before they leave." },
+] as const;
+
+function Float({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <div className={`absolute z-20 rounded-2xl border border-line bg-surface p-4 shadow-[0_24px_60px_-20px_rgb(29_24_48/0.35)] ${className}`}>{children}</div>;
 }
 
-const WAVE = [6, 14, 22, 12, 28, 18, 34, 20, 10, 26, 16, 30, 12, 22, 8, 18, 26, 14, 20, 10, 24, 12, 6];
+const WAVE = [8, 16, 24, 12, 30, 18, 34, 22, 10, 26, 16, 30, 12, 22, 8, 18];
 
 export default function Showcase() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-bg">
-      {/* soft color fields */}
-      <div className="pointer-events-none absolute -right-40 -top-40 h-[620px] w-[620px] rounded-full opacity-60 blur-3xl" style={{ background: "radial-gradient(circle, var(--brand-soft), transparent 70%)" }} />
-      <div className="pointer-events-none absolute -bottom-48 -left-32 h-[520px] w-[520px] rounded-full opacity-70 blur-3xl" style={{ background: "radial-gradient(circle, var(--coral-soft), transparent 70%)" }} />
+    <main className="relative flex min-h-screen items-center overflow-hidden bg-bg">
+      <div className="pointer-events-none absolute -right-48 top-1/2 h-[900px] w-[900px] -translate-y-1/2 rounded-full opacity-70 blur-3xl" style={{ background: "radial-gradient(circle, var(--brand-soft), transparent 65%)" }} />
 
-      <div className="relative mx-auto grid min-h-screen max-w-[1500px] items-center gap-12 px-6 py-12 lg:grid-cols-[1fr_1.15fr] lg:px-14">
-        {/* ── Left: the pitch ── */}
+      <div className="relative mx-auto grid w-full max-w-[1440px] items-center gap-16 px-8 py-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-20">
+        {/* ── Pitch ── */}
         <section>
           <div className="flex items-center gap-3">
             <Logo />
-            <span className="font-display text-2xl font-medium tracking-tight">Momentum</span>
-            <span className="ml-1 rounded-full border border-line bg-surface px-3 py-1 text-xs font-medium text-muted">Built with Claude</span>
+            <span className="font-display text-3xl font-medium tracking-tight">Momentum</span>
           </div>
 
-          <h1 className="mt-10 font-display text-5xl font-medium leading-[1.05] tracking-tight sm:text-6xl xl:text-7xl">
+          <h1 className="mt-14 font-display text-6xl font-medium leading-[1.02] tracking-tight xl:text-[5.5rem]">
             From first issue
             <br />
             to <em className="text-brand">second PR</em>.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-            An AI co-pilot that keeps women in open-source mentorship programs moving. A safe place to ask, learn and ship, and an early heads-up for organizers before anyone quietly drops out.
+          <p className="mt-6 max-w-md text-xl leading-relaxed text-muted">The AI co-pilot for women in open-source mentorship programs.</p>
+
+          <ul className="mt-12 grid max-w-lg gap-5 sm:grid-cols-2">
+            {FEATURES.map((f) => (
+              <li key={f.name} className="flex gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand"><Icon name={f.icon} /></span>
+                <div>
+                  <p className="font-medium">{f.name}</p>
+                  <p className="text-sm leading-snug text-muted">{f.line}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-14 text-sm text-muted">
+            Built with <span className="font-medium text-ink">Claude</span>
           </p>
-
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
-            {[
-              { v: "27,000", l: "registered for GSSoC 2024" },
-              { v: "6,000+", l: "never opened a single PR" },
-              { v: "6 / 6", l: "at-risk caught early*" },
-            ].map((s) => (
-              <div key={s.l} className="rounded-2xl border border-line bg-surface/70 p-4 backdrop-blur">
-                <p className="font-display text-3xl font-medium tabular-nums">{s.v}</p>
-                <p className="mt-1 text-xs leading-snug text-muted">{s.l}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex max-w-xl flex-wrap gap-2">
-            {["🎙 Voice check-ins", "🛡 Tone shield", "💭 Review coach", "📸 Screenshot help", "✦ Agentic co-pilot", "📈 Retention eval"].map((f) => (
-              <span key={f} className="rounded-full bg-surface px-3 py-1.5 text-sm shadow-card">{f}</span>
-            ))}
-          </div>
-
-          <div className="mt-12 flex items-center gap-3 border-t border-line pt-6">
-            <Avatar name="Shatakshi Chaudhari" size={40} />
-            <div className="text-sm">
-              <p className="font-medium">Shatakshi Chaudhari</p>
-              <p className="text-muted">Code with Claude: Women in AI Hackathon · San Francisco 2026</p>
-            </div>
-            <p className="ml-auto hidden font-mono text-xs text-muted xl:block">github.com/Shatakshi107/momentum</p>
-          </div>
-          <p className="mt-3 text-[11px] text-muted">*Backtest on a simulated cohort. GSSoC figures are public program stats.</p>
         </section>
 
-        {/* ── Right: product moments ── */}
-        <section className="relative grid gap-4 sm:grid-cols-2">
-          {/* Persona */}
-          <div className="absolute -top-6 left-6 z-10 flex items-center gap-3 rounded-full border border-line bg-surface py-1.5 pl-1.5 pr-4 shadow-card">
-            <Avatar name="Maya R." size={34} />
-            <div className="text-xs leading-tight">
-              <p className="font-semibold">Maya R. · Oakland</p>
-              <p className="text-muted">Community college · 6 hrs/week on BART</p>
+        {/* ── Product ── */}
+        <section className="relative mx-auto w-full max-w-[640px] py-24">
+          {/* App window */}
+          <div className="relative z-10 overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_40px_100px_-30px_rgb(29_24_48/0.45)]">
+            <div className="flex items-center gap-2 border-b border-line bg-surface-2/60 px-5 py-3">
+              {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+                <span key={c} className="h-3 w-3 rounded-full" style={{ background: c }} />
+              ))}
+              <span className="mx-auto rounded-md bg-surface px-10 py-1 font-mono text-[11px] text-muted">momentum.app</span>
+            </div>
+            <div className="space-y-4 p-6">
+              <div className="rounded-2xl bg-ink p-6 text-bg">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-60">Co-pilot · this week</p>
+                <p className="mt-3 font-display text-[22px] leading-snug">
+                  Maya&apos;s mentor has gone quiet. Pair her with a new one today, and nudge the maintainer on Jasmine&apos;s PR.
+                </p>
+              </div>
+              {[
+                { n: "Maya R.", d: "Mentor unresponsive", a: "Reassign mentor", bar: "bg-coral" },
+                { n: "Jasmine T.", d: "Waiting on maintainer", a: "Escalate review", bar: "bg-coral" },
+                { n: "Sofia M.", d: "Overwhelmed by review", a: "Break into steps", bar: "bg-amber" },
+              ].map((r) => (
+                <div key={r.n} className="relative flex items-center gap-3 overflow-hidden rounded-2xl border border-line p-3.5 pl-5">
+                  <span className={`absolute inset-y-0 left-0 w-1 ${r.bar}`} />
+                  <Avatar name={r.n} size={32} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">{r.n}</p>
+                    <p className="text-xs text-muted">{r.d}</p>
+                  </div>
+                  <span className="ml-auto rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand">{r.a}</span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Voice check-in */}
-          <Tile className="pt-9">
-            <Kicker>Voice check-in</Kicker>
-            <div className="mt-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-coral text-lg text-white">🎙</span>
-              <div className="flex h-10 flex-1 items-center gap-[3px]" aria-hidden>
+          <Float className="-left-24 -top-6 w-[280px]">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-coral text-white"><Icon name="mic" size={18} /></span>
+              <div className="flex h-8 flex-1 items-center gap-[3px]" aria-hidden>
                 {WAVE.map((h, i) => (
-                  <span key={i} className="w-[4px] rounded-full bg-brand" style={{ height: h, opacity: 0.35 + (h / 34) * 0.65 }} />
+                  <span key={i} className="w-[3px] rounded-full bg-brand" style={{ height: h * 0.8, opacity: 0.4 + (h / 34) * 0.6 }} />
                 ))}
               </div>
             </div>
-            <p className="mt-4 text-sm italic leading-relaxed text-muted">&ldquo;Stuck on tests for three days… kind of wondering if this is for me.&rdquo;</p>
-            <div className="mt-3 rounded-2xl bg-brand-soft p-3 text-sm leading-relaxed">
-              <span className="mr-1">🔊</span>Reproducing that crash is real progress. On BART tonight, just run the one failing test. Nicole will check in today.
-            </div>
-          </Tile>
+            <p className="mt-3 text-sm leading-relaxed">
+              Being stuck is normal. Run just the one failing test on BART tonight.
+            </p>
+          </Float>
 
           {/* Tone shield */}
-          <Tile className="pt-9">
-            <Kicker>Tone shield</Kicker>
-            <p className="mt-4 select-none text-sm text-muted blur-[3px]">This is wrong. Did you even read the docs? drop_last exists for a reason.</p>
-            <div className="my-3 flex items-center gap-2 text-xs text-muted">
-              <span className="h-px flex-1 bg-line" /> what Maya sees <span className="h-px flex-1 bg-line" />
-            </div>
-            <p className="text-sm leading-relaxed">The built-in <code className="rounded bg-surface-2 px-1">drop_last</code> option may already cover this. Could you check the docs and see if it fits?</p>
-            <ol className="mt-3 space-y-1.5 text-sm">
-              {["Read the drop_last docs", "Swap in drop_last, or explain why not"].map((s, i) => (
-                <li key={s} className="flex gap-2">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[11px] font-semibold text-brand">{i + 1}</span>
-                  {s}
-                </li>
-              ))}
-            </ol>
-            <p className="mt-3 inline-block rounded-full bg-coral-soft px-2.5 py-1 text-xs font-medium text-coral">⚑ flagged to organizers</p>
-          </Tile>
+          <Float className="-bottom-6 -left-28 w-[290px]">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand"><Icon name="shield" size={14} /> Tone shield</p>
+            <p className="mt-2 select-none text-sm text-muted blur-[3px]">Did you even read the docs?</p>
+            <p className="mt-2 text-sm leading-relaxed">The built-in <code className="rounded bg-surface-2 px-1">drop_last</code> option may already cover this. Worth a look?</p>
+          </Float>
 
-          {/* Co-pilot briefing */}
-          <div className="rounded-3xl bg-ink p-6 text-bg shadow-card sm:col-span-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Kicker tone="text-bg/60">Co-pilot · this week&apos;s briefing</Kicker>
-              <span className="ml-auto flex items-center gap-1.5 rounded-full bg-bg/10 px-2.5 py-1 font-mono text-[11px] opacity-80">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint" /> 23 steps · 12 timelines read
-              </span>
-            </div>
-            <p className="mt-4 font-display text-xl leading-relaxed sm:text-2xl">
-              Maya&apos;s mentor hasn&apos;t replied to anyone in 9 days, so move her to Chris today. And escalate Jasmine&apos;s PR: 15 days waiting on <em>us</em>, not her.
-            </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {[
-                { n: "Maya R.", d: "mentor unresponsive", a: "reassign mentor", u: "bg-coral" },
-                { n: "Jasmine T.", d: "waiting on maintainer", a: "escalate review", u: "bg-coral" },
-                { n: "Sofia M.", d: "overwhelmed by review", a: "break into steps", u: "bg-amber" },
-              ].map((c) => (
-                <div key={c.n} className="relative overflow-hidden rounded-2xl bg-bg/10 p-3 pl-4">
-                  <span className={`absolute inset-y-0 left-0 w-1 ${c.u}`} />
-                  <div className="flex items-center gap-2">
-                    <Avatar name={c.n} size={24} />
-                    <p className="text-sm font-medium">{c.n}</p>
-                  </div>
-                  <p className="mt-2 text-xs opacity-70">{c.d}</p>
-                  <p className="text-xs font-medium">→ {c.a}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Discord post */}
-          <div className="rounded-3xl p-4 shadow-card" style={{ background: "#313338", color: "#dbdee1" }}>
-            <p className="mb-2 flex items-center gap-1.5 text-xs" style={{ color: "#949ba4" }}>
-              <DiscordLogo size={13} color="#949ba4" /> # pod-14
-            </p>
-            <div className="flex gap-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">M</span>
-              <div className="min-w-0 text-[13px]">
-                <p className="flex items-center gap-1.5">
-                  <span className="font-semibold text-white">Momentum</span>
-                  <span className="rounded px-1 text-[10px] font-semibold text-white" style={{ background: "#5865F2" }}>APP</span>
-                </p>
-                <div className="mt-1 rounded border-l-4 p-2.5" style={{ background: "#2b2d31", borderColor: "#5b3fd6" }}>
-                  <p className="font-semibold text-white">👋 Jasmine, a note from the pod 14 team</p>
-                  <p className="mt-1 leading-snug">Your PR #398 is solid, and the wait is on us, not you. A maintainer will review it by Friday.</p>
-                </div>
-              </div>
-            </div>
-            <p className="mt-2 text-right text-[11px]" style={{ color: "#949ba4" }}>approved by a human ✓</p>
-          </div>
-
-          {/* Proof profile */}
-          <Tile>
-            <Kicker>Proof profile</Kicker>
-            <p className="mt-3 text-sm">
-              <span className="text-amber line-through">I just helped fix a small bug</span>
-            </p>
-            <p className="mt-1 text-sm font-medium leading-relaxed">→ Fixed a DataLoader crash affecting training on uneven datasets; added 4 edge-case tests</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {["PyTorch", "pytest", "Code review"].map((s) => (
-                <span key={s} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium text-brand">{s}</span>
-              ))}
-            </div>
-          </Tile>
+          {/* Review coach */}
+          <Float className="-bottom-10 -right-12 w-[260px]">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand"><Icon name="chat" size={14} /> Review coach</p>
+            <p className="mt-2.5 rounded-xl bg-brand-soft px-3 py-2.5 text-sm font-medium leading-snug text-brand">What did a drop_last=True user get before your change?</p>
+          </Float>
         </section>
       </div>
     </main>
